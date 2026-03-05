@@ -1,0 +1,33 @@
+{
+  "nav": {
+    "home": "Home",
+    "helpline": "Helpline", 
+    "resources": "Resources"
+  },
+  "home": {
+    "title": "Aware Women",
+    "subtitle": "Information on Women's Rights",
+    "explore": "Explore Services"
+  },
+  "categories": {
+    "constitution": "Indian Constitution",
+    "reproductive": "Reproductive Rights",
+    "bns": "Bharatiya Nyaya Sanhita",
+    "sexual": "Sexual Crimes",
+    "marriage": "Marriage Crimes",
+    "cyber": "Cyber Crimes",
+    "other": "Other Crimes"
+  },
+  "helpline": {
+    "title": "Helpline",
+    "call": "Call Now"
+  },
+  "helplines": {
+    "emergency": "Emergency Helpline",
+    "national_women": "National Women Helpline",
+    "distress": "Women Distress Helpline",
+    "ncw": "NCW Helpline",
+    "ncw_short": "NCW Short Code",
+    "cyber": "Cyber Crime Helpline"
+  }
+}
