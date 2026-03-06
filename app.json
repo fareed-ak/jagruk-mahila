@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "jagruk-mahila",
+    "name": "Jagruk Mahila",
     "slug": "jagruk-mahila",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,10 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#E6F4FE"
       },
       "package": "com.jagrukmahila.app"
     },
