@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Alert, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { I18nManager } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { changeLanguage } from '../app/_layout';
 
 const LANGUAGE_STORAGE_KEY = '@jagruk_mahila:language';
 
@@ -19,32 +20,8 @@ const TopBar = () => {
 
   const handleLanguageChange = async (language) => {
     try {
-      const currentLang = i18n.language;
-      await i18n.changeLanguage(language);
-      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
-      
-      // Handle RTL switching and app reload
-      const needsReload = (currentLang === 'ur' && language !== 'ur') || 
-                         (currentLang !== 'ur' && language === 'ur');
-      
-      if (language === 'ur') {
-        I18nManager.forceRTL(true);
-      } else {
-        I18nManager.forceRTL(false);
-      }
-      
       setDropdownVisible(false);
-      
-      // Auto-reload when switching to/from Urdu
-      if (needsReload) {
-        setTimeout(() => {
-          Alert.alert(
-            'Language Changed',
-            'Please restart the app to apply the new layout for RTL support.',
-            [{ text: 'OK' }]
-          );
-        }, 500);
-      }
+      await changeLanguage(language);
     } catch (error) {
       console.error('Error changing language:', error);
       setDropdownVisible(false);
