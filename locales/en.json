@@ -1,13 +1,19 @@
 {
   "nav": {
     "home": "Home",
+    "explore": "Explore",
+    "cases": "Cases",
+    "chat": "Chat",
+    "help": "Help",
     "helpline": "Helpline", 
     "resources": "Resources"
   },
   "home": {
     "title": "Jagruk Mahila",
-    "subtitle": "Information on Women's Rights",
-    "explore": "Explore Services"
+    "subtitle": "Empowering Women Through Knowledge and Rights",
+    "explore": "Explore Services",
+    "explore_heading": "Explore Services",
+    "dev_placeholder": "This section is under development"
   },
   "categories": {
     "constitution": "Indian Constitution",

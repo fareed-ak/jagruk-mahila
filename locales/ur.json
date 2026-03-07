@@ -1,13 +1,19 @@
 {
   "nav": {
     "home": "ہوم",
+    "explore": "دریافت",
+    "cases": "کیسز",
+    "chat": "چیٹ",
+    "help": "مدد",
     "helpline": "ہیلپ لائن",
     "resources": "وسائل"
   },
   "home": {
     "title": "جاگرک محیلا",
-    "subtitle": "خواتین کے حقوق کی معلومات",
-    "explore": "خدمات دریافت کریں"
+    "subtitle": "علم اور حقوق کے ذریعے خواتین کو با اختیار بنانا",
+    "explore": "خدمات دریافت کریں",
+    "explore_heading": "خدمات دریافت کریں",
+    "dev_placeholder": "یہ سیکشن تیار ہو رہا ہے"
   },
   "categories": {
     "constitution": "ہندوستانی آئین",
