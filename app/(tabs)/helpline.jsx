@@ -6,18 +6,19 @@ import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
 
 function Helpline() {
   const { t, i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
 
   const helplines = [
-    { id: "emergency", number: "112", color: "#C0392B", icon: "call" },
-    { id: "national_women", number: "181", color: "#E8927C", icon: "call" },
-    { id: "distress", number: "1091", color: "#F5A623", icon: "call" },
-    { id: "ncw", number: "7827170170", color: "#C0392B", icon: "call" },
-    { id: "ncw_short", number: "14490", color: "#E8927C", icon: "call" },
-    { id: "cyber", number: "1930", color: "#F5A623", icon: "call" }
+    { id: "emergency", number: "112", color: Colors.primary, icon: "call" },
+    { id: "national_women", number: "181", color: Colors.primaryLight, icon: "call" },
+    { id: "distress", number: "1091", color: Colors.secondary, icon: "call" },
+    { id: "ncw", number: "7827170170", color: Colors.primary, icon: "call" },
+    { id: "ncw_short", number: "14490", color: Colors.primaryLight, icon: "call" },
+    { id: "cyber", number: "1930", color: Colors.secondary, icon: "call" }
   ];
 
   const handleCall = (number) => {
@@ -38,8 +39,8 @@ function Helpline() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" backgroundColor="#FDF6EE" />
+    <SafeAreaView style={GlobalStyles.container}>
+      <StatusBar style="dark" backgroundColor={Colors.background} />
       
       {/* Top Bar */}
       <TopBar />

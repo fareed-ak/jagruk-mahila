@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
 
 export default function Resources() {
   const { t, i18n } = useTranslation();
@@ -132,25 +133,25 @@ export default function Resources() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, isRTL && styles.containerRTL]}>
-      <StatusBar style="dark" backgroundColor="#FDF6EE" />
+    <SafeAreaView style={[GlobalStyles.container, isRTL && styles.containerRTL]}>
+      <StatusBar style="dark" backgroundColor={Colors.background} />
       
       {/* Back Button */}
-      <View style={styles.header}>
+      <View style={GlobalStyles.header}>
         <TouchableOpacity 
-          style={styles.backButton} 
+          style={GlobalStyles.backButton} 
           onPress={() => router.back()}
         >
           <Ionicons 
-            name={isRTL ? "arrow-forward-circle" : "arrow-back-circle"} 
-            size={32} 
-            color="#C0392B" 
+            name={isRTL ? "arrow-forward" : "arrow-back"} 
+            size={20} 
+            color={Colors.backButtonIcon} 
           />
         </TouchableOpacity>
-        <Text style={[styles.title, isRTL && styles.textRTL]}>
+        <Text style={[GlobalStyles.headerTitle, isRTL && GlobalStyles.textRTL]}>
           {t('nav.resources')}
         </Text>
-        <View style={styles.headerSpacer} />
+        <View style={GlobalStyles.headerSpacer} />
       </View>
 
       {cat && (
@@ -158,10 +159,10 @@ export default function Resources() {
           <Ionicons 
             name={getCategoryIcon(cat)} 
             size={24} 
-            color="#C0392B"
+            color={Colors.primary}
             style={[styles.categoryIcon, isRTL && styles.categoryIconRTL]}
           />
-          <Text style={[styles.categoryTitle, isRTL && styles.textRTL]}>
+          <Text style={[styles.categoryTitle, isRTL && GlobalStyles.textRTL]}>
             {t(`categories.${cat}`)}
           </Text>
         </View>
@@ -243,199 +244,160 @@ export default function Resources() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FDF6EE',
+  containerRTL: {
+    transform: [{ scaleX: -1 }],
   },
-  backButton: {
-    padding: 4,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1A0A00',
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40, // Same as back button width
-  },  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#6B2D8B',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-  },
-  backButton: {
-    padding: 5,
-    marginRight: 10,
-  },
-  backButtonText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  title: {
-    flex: 1,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 35, // Same width as back button to center title
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
+  
   categoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 20,
+    backgroundColor: Colors.surface,
+    padding: Spacing.xl,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    borderBottomColor: Colors.border,
   },
+  
   categoryHeaderRTL: {
     flexDirection: 'row-reverse',
   },
-  categoryEmoji: {
-    fontSize: 24,
-    marginRight: 10,
-  },  categoryIcon: {
-    marginRight: 12,
+  
+  categoryIcon: {
+    marginRight: Spacing.md,
   },
+  
   categoryIconRTL: {
     marginRight: 0,
-    marginLeft: 12,
-  },  categoryEmojiRTL: {
-    marginRight: 0,
-    marginLeft: 10,
+    marginLeft: Spacing.md,
   },
+  
   categoryTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#374151',
+    fontSize: Typography.headlineMedium,
+    fontWeight: Typography.weightSemiBold,
+    color: Colors.text,
     flex: 1,
   },
+  
   scrollView: {
     flex: 1,
   },
+  
   resourcesList: {
-    padding: 20,
-    gap: 15,
+    padding: Spacing.xl,
+    gap: Spacing.lg,
   },
+  
   resourceCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...GlobalStyles.card,
+    marginBottom: 0,
   },
+  
   cardContent: {
-    marginBottom: 10,
+    marginBottom: Spacing.sm,
   },
+  
   cardContentRTL: {
     alignItems: 'flex-end',
   },
+  
   resourceTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#374151',
-    marginBottom: 8,
-    lineHeight: 22,
+    fontSize: Typography.bodyLarge,
+    fontWeight: Typography.weightSemiBold,
+    color: Colors.text,
+    marginBottom: Spacing.sm,
+    lineHeight: Typography.bodyLarge * 1.3,
   },
+  
   resourcePreview: {
-    fontSize: 14,
-    color: '#6b7280',
-    lineHeight: 20,
+    fontSize: Typography.bodyMedium,
+    color: Colors.textSecondary,
+    lineHeight: Typography.bodyMedium * 1.4,
   },
+  
   readMoreText: {
-    fontSize: 14,
-    color: '#6B2D8B',
-    fontWeight: '600',
+    fontSize: Typography.bodyMedium,
+    color: Colors.primary,
+    fontWeight: Typography.weightSemiBold,
     textAlign: 'right',
   },
+  
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 60,
+    paddingVertical: Spacing.xxxl * 2,
   },
+  
   emptyStateText: {
-    fontSize: 16,
-    color: '#6b7280',
+    fontSize: Typography.bodyLarge,
+    color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: Typography.bodyLarge * 1.4,
   },
+  
   bottomSpacing: {
-    height: 20,
+    height: Spacing.xl,
   },
+  
   // Modal styles
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
+  
   modalBackdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: Colors.overlay,
   },
+  
   modalContent: {
-    backgroundColor: 'white',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: BorderRadius.lg,
+    borderTopRightRadius: BorderRadius.lg,
     maxHeight: '80%',
-    paddingTop: 20,
+    paddingTop: Spacing.xl,
   },
+  
   modalHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 15,
+    paddingHorizontal: Spacing.xl,
+    paddingBottom: Spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    borderBottomColor: Colors.border,
   },
+  
   modalTitle: {
     flex: 1,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#374151',
-    paddingRight: 15,
+    fontSize: Typography.headlineMedium,
+    fontWeight: Typography.weightSemiBold,
+    color: Colors.text,
+    paddingRight: Spacing.lg,
   },
+  
   closeButton: {
     width: 30,
     height: 30,
-    borderRadius: 15,
-    backgroundColor: '#f3f4f6',
+    borderRadius: BorderRadius.round,
+    backgroundColor: Colors.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  
   closeButtonText: {
-    fontSize: 20,
-    color: '#6b7280',
-    fontWeight: 'bold',
+    fontSize: Typography.displaySmall,
+    color: Colors.textSecondary,
+    fontWeight: Typography.weightSemiBold,
   },
+  
   modalScroll: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.lg,
   },
+  
   modalBody: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#374151',
-    paddingBottom: 20,
+    fontSize: Typography.bodyLarge,
+    lineHeight: Typography.bodyLarge * 1.4,
+    color: Colors.text,
+    paddingBottom: Spacing.xl,
   },
 });

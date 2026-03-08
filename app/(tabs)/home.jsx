@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
 
 const { width } = Dimensions.get('window');
 const cardWidth = (width - 48) / 2; // 2 columns with padding
@@ -37,8 +38,8 @@ function Home() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="dark" backgroundColor="#FDF6EE" />
+    <SafeAreaView style={GlobalStyles.container}>
+      <StatusBar style="dark" backgroundColor={Colors.background} />
       
       {/* Top Bar */}
       <TopBar />
@@ -75,7 +76,7 @@ function Home() {
                 <Ionicons 
                   name={category.icon} 
                   size={32} 
-                  color="#C0392B" 
+                  color={Colors.primary} 
                   style={styles.categoryIcon}
                 />
                 <Text style={styles.categoryText}>{t(`categories.${category.key}`)}</Text>
@@ -93,7 +94,7 @@ function Home() {
                 <Ionicons 
                   name={categories[6].icon} 
                   size={32} 
-                  color="#C0392B" 
+                  color={Colors.primary} 
                   style={styles.categoryIcon}
                 />
                 <Text style={styles.categoryText}>{t(`categories.${categories[6].key}`)}</Text>
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
   },
   heroBand: {
     height: 120,
-    backgroundColor: '#C0392B', // deep terracotta red
+    backgroundColor: Colors.primary,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
