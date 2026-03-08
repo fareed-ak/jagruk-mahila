@@ -10,16 +10,16 @@ function TabBar({ state, descriptors, navigation }) {
 
   const tabConfig = [
     {
-      name: 'index',
+      name: 'home',
       label: 'Home',
       iconFilled: 'home',
       iconOutline: 'home-outline',
     },
     {
-      name: 'explore',
-      label: 'Explore', 
-      iconFilled: 'grid',
-      iconOutline: 'grid-outline',
+      name: 'helpline',
+      label: 'Helpline', 
+      iconFilled: 'call',
+      iconOutline: 'call-outline',
     },
     {
       name: 'cases',
@@ -34,17 +34,17 @@ function TabBar({ state, descriptors, navigation }) {
       iconOutline: 'chatbubble-ellipses-outline',
     },
     {
-      name: 'helpline',
-      label: 'Help',
-      iconFilled: 'call',
-      iconOutline: 'call-outline',
+      name: 'more',
+      label: 'More',
+      iconFilled: 'ellipsis-horizontal-circle',
+      iconOutline: 'ellipsis-horizontal-circle-outline',
     },
   ];
 
   // Fallback labels if translation fails
   const getTabLabel = (tabInfo) => {
     try {
-      const translationKey = `nav.${tabInfo.name === 'index' ? 'home' : tabInfo.name}`;
+      const translationKey = `nav.${tabInfo.name}`;
       const translated = t(translationKey);
       return translated !== translationKey ? translated : tabInfo.label;
     } catch (error) {
