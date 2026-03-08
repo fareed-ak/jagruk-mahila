@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Modal, Pressable, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ export default function Resources() {
   const { cat } = useLocalSearchParams();
   const [selectedResource, setSelectedResource] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const isRTL = i18n.language === 'ur';
+  const isRTL = I18nManager.isRTL;
   const currentLanguage = i18n.language;
 
   const resourceData = {
@@ -178,7 +178,7 @@ export default function Resources() {
                   </Text>
                 </View>
                 <Text style={styles.readMoreText}>
-                  {isRTL ? "مزید پڑھیں" : currentLanguage === 'hi' ? "और पढ़ें" : "Read More"}
+                  {t('common.read_more')}
                 </Text>
               </TouchableOpacity>
             ))

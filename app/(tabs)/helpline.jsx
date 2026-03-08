@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, I18nManager } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
-import * as Linking from 'expo-linking';
+import { Linking } from 'react-native';
 import TopBar from '../../components/TopBar';
 
 function Helpline() {
   const { t, i18n } = useTranslation();
-  const isRTL = i18n.language === 'ur';
+  const isRTL = I18nManager.isRTL;
 
   const helplines = [
     { id: "emergency", number: "112", color: "#C0392B", emoji: "🚨" },
@@ -47,9 +47,7 @@ function Helpline() {
       <View style={styles.heroBand}>
         <Text style={styles.heroTitle}>{t('helpline.title')}</Text>
         <Text style={styles.heroSubtitle}>
-          {isRTL ? 'فوری مدد کے لیے کال کریں' : 
-           i18n.language === 'hi' ? 'तत्काल सहायता के लिए कॉल करें' : 
-           'Call for immediate assistance'}
+          {t('helpline.subtitle')}
         </Text>
         <View style={styles.goldLine} />
       </View>
@@ -58,9 +56,7 @@ function Helpline() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <Text style={styles.sectionHeading}>
-            {isRTL ? 'ہیلپ لائنز' : 
-             i18n.language === 'hi' ? 'सहायता लाइनें' : 
-             'Helplines'}
+            {t('helpline.section_heading')}
           </Text>
           
           <View style={styles.helplinesList}>

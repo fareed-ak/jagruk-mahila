@@ -6,7 +6,7 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Dimensions,
-  Animated 
+  I18nManager 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -19,6 +19,7 @@ const cardWidth = (width - 48) / 2; // 2 columns with padding
 
 function Home() {
   const { t } = useTranslation();
+  const isRTL = I18nManager.isRTL;
 
   const categories = [
     { key: "constitution", emoji: "⚖️", route: "/resources?cat=constitution" },
@@ -31,21 +32,6 @@ function Home() {
   ];
 
   const handleCategoryPress = (route) => {
-    // Create press animation
-    const animValue = new Animated.Value(1);
-    Animated.sequence([
-      Animated.timing(animValue, {
-        toValue: 0.96,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(animValue, {
-        toValue: 1,
-        friction: 4,
-        useNativeDriver: true,
-      }),
-    ]).start();
-    
     router.push(route);
   };
 
@@ -238,13 +224,5 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
-
-// Apply full-width styling for the last card in full-width mode
-const fullWidthCardStyle = {
-  width: '100%',
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'center',
-};
 
 export default Home;
