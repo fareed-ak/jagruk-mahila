@@ -8,6 +8,9 @@
     "helpline": "Helpline", 
     "resources": "Resources"
   },
+  "common": {
+    "read_more": "Read More"
+  },
   "home": {
     "title": "Jagruk Mahila",
     "subtitle": "Empowering Women Through Knowledge and Rights",
@@ -26,6 +29,8 @@
   },
   "helpline": {
     "title": "Helpline",
+    "subtitle": "Call for immediate assistance",
+    "section_heading": "Helplines",
     "call": "Call Now"
   },
   "helplines": {

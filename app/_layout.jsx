@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { I18nManager, Platform, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Updates from 'expo-updates';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
@@ -82,22 +83,19 @@ export default function RootLayout() {
 // Export function to change language with fallback reload
 export const changeLanguage = async (lang) => {
   try {
-    // 1. Switch i18n language (re-renders all t() strings instantly)
     await i18n.changeLanguage(lang);
-
-    // 2. Persist the selection
     await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
 
-    // 3. Determine if RTL direction needs to flip
     const shouldBeRTL = lang === 'ur';
     const needsReload = I18nManager.isRTL !== shouldBeRTL;
 
-    // 4. Set the RTL flag
     I18nManager.allowRTL(shouldBeRTL);
     I18nManager.forceRTL(shouldBeRTL);
 
-    // 5. Silent language switch - no alerts or prompts
-
+    if (needsReload) {
+      // Direction changed — must reload for native layout to update
+      await Updates.reloadAsync();
+    }
   } catch (error) {
     console.error('changeLanguage error:', error);
   }

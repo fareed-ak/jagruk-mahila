@@ -8,6 +8,9 @@
     "helpline": "ہیلپ لائن",
     "resources": "وسائل"
   },
+  "common": {
+    "read_more": "مزید پڑھیں"
+  },
   "home": {
     "title": "جاگرک محیلا",
     "subtitle": "علم اور حقوق کے ذریعے خواتین کو با اختیار بنانا",
@@ -26,6 +29,8 @@
   },
   "helpline": {
     "title": "ہیلپ لائن",
+    "subtitle": "فوری مدد کے لیے کال کریں",
+    "section_heading": "ہیلپ لائنز",
     "call": "کال کریں"
   },
   "helplines": {
