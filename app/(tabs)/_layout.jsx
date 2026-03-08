@@ -50,6 +50,13 @@ export default function TabLayout() {
           tabBarIconFocused: 'ellipsis-horizontal-circle',
         }}
       />
+      <Tabs.Screen
+        name="resources"
+        options={{
+          href: null,
+          title: 'Resources',
+        }}
+      />
     </Tabs>
   );
 }

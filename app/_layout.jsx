@@ -70,12 +70,6 @@ export default function RootLayout() {
           headerShown: false 
         }} 
       />
-      <Stack.Screen 
-        name="resources" 
-        options={{ 
-          headerShown: false 
-        }} 
-      />
     </Stack>
   );
 }

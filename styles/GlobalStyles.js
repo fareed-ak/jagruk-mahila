@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -30,26 +30,26 @@ export const Colors = {
 };
 
 export const Typography = {
-  // Font Sizes
-  displayLarge: 32,
-  displayMedium: 24,
-  displaySmall: 20,
-  headlineLarge: 22,
-  headlineMedium: 18,
-  headlineSmall: 16,
-  bodyLarge: 17,
-  bodyMedium: 15,
-  bodySmall: 13,
-  labelLarge: 15,
-  labelMedium: 13,
-  labelSmall: 11,
+  // Font Sizes - Moderately increased for better readability
+  displayLarge: 34,
+  displayMedium: 26,
+  displaySmall: 22,
+  headlineLarge: 24,
+  headlineMedium: 20,
+  headlineSmall: 18,
+  bodyLarge: 18,
+  bodyMedium: 16,
+  bodySmall: 14,
+  labelLarge: 16,
+  labelMedium: 14,
+  labelSmall: 12,
   
-  // Font Weights
-  weightLight: '300',
-  weightRegular: '400',
-  weightMedium: '500',
-  weightSemiBold: '600',
-  weightBold: '700',
+  // Font Weights - Slightly bolder as default
+  weightLight: '400',
+  weightRegular: '500',
+  weightMedium: '600',
+  weightSemiBold: '700',
+  weightBold: '800',
 };
 
 export const Spacing = {
@@ -163,14 +163,14 @@ export const GlobalStyles = StyleSheet.create({
   
   bodyLarge: {
     fontSize: Typography.bodyLarge,
-    fontWeight: Typography.weightRegular,
+    fontWeight: Typography.weightMedium,
     color: Colors.text,
     lineHeight: Typography.bodyLarge * 1.4,
   },
   
   bodyMedium: {
     fontSize: Typography.bodyMedium,
-    fontWeight: Typography.weightRegular,
+    fontWeight: Typography.weightMedium,
     color: Colors.text,
     lineHeight: Typography.bodyMedium * 1.4,
   },
@@ -246,6 +246,225 @@ export const GlobalStyles = StyleSheet.create({
   
   flex1: {
     flex: 1,
+  },
+
+  // Cases Tab Styles
+  filterContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    gap: 8,
+  },
+
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    backgroundColor: Colors.surface,
+  },
+
+  filterButtonActive: {
+    backgroundColor: Colors.primary,
+  },
+
+  filterButtonText: {
+    fontSize: Typography.labelMedium,
+    fontWeight: Typography.weightMedium,
+    color: Colors.primary,
+  },
+
+  filterButtonTextActive: {
+    color: Colors.textLight,
+  },
+
+  casesContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+
+  caseCard: {
+    marginBottom: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 8,
+    overflow: 'hidden',
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+
+  caseHeader: {
+    padding: 16,
+    backgroundColor: Colors.surface,
+  },
+
+  caseHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  caseHeaderText: {
+    flex: 1,
+  },
+
+  caseTitle: {
+    fontSize: Typography.bodyLarge,
+    fontWeight: Typography.weightSemiBold,
+    color: Colors.text,
+    marginBottom: 4,
+  },
+
+  caseYear: {
+    fontSize: Typography.bodySmall,
+    color: Colors.textSecondary,
+    fontWeight: Typography.weightMedium,
+  },
+
+  caseContent: {
+    padding: 16,
+    paddingTop: 0,
+  },
+
+  caseSection: {
+    marginBottom: 16,
+  },
+
+  caseSectionTitle: {
+    fontSize: Typography.bodyMedium,
+    fontWeight: Typography.weightSemiBold,
+    color: Colors.primary,
+    marginBottom: 8,
+  },
+
+  caseSectionText: {
+    fontSize: Typography.bodyMedium,
+    fontWeight: Typography.weightMedium,
+    color: Colors.text,
+    lineHeight: 24,
+  },
+
+  // Dropdown Styles
+  filterDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: Colors.surface,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+
+  filterDropdownText: {
+    fontSize: Typography.bodyMedium,
+    fontWeight: Typography.weightMedium,
+    color: Colors.primary,
+    flex: 1,
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  modalContainer: {
+    backgroundColor: Colors.surface,
+    borderRadius: 12,
+    minWidth: 250,
+    maxWidth: 300,
+    margin: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 8,
+      },
+    }),
+  },
+
+  modalOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+
+  modalOptionSelected: {
+    backgroundColor: Colors.background,
+  },
+
+  modalOptionText: {
+    fontSize: Typography.bodyMedium,
+    fontWeight: Typography.weightMedium,
+    color: Colors.text,
+    flex: 1,
+  },
+
+  modalOptionTextSelected: {
+    color: Colors.primary,
+    fontWeight: Typography.weightSemiBold,
+  },
+
+  // Info Banner Styles  
+  infoBanner: {
+    margin: 20,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: Colors.background,
+  },
+
+  infoBannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  infoBannerText: {
+    fontSize: Typography.bodyMedium,
+    fontWeight: Typography.weightMedium,
+    color: Colors.text,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+
+  // ScrollView container
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
   },
 });
 

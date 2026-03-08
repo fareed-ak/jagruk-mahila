@@ -95,5 +95,17 @@
     "ncw": "एन सी डब्ल्यू",
     "ncw_short": "एन सी डब्ल्यू शॉर्ट कोड",
     "cyber": "साइबर अपराध"
+  },
+  "cases": {
+    "title": "ऐतिहासिक मामले",
+    "banner": "इन मामलों ने आज आपकी सुरक्षा करने वाले कानूनों को आकार दिया है।",
+    "filter_all": "सभी",
+    "filter_maintenance": "भरण-पोषण",
+    "filter_triple_talaq": "तीन तलाक",
+    "filter_workplace": "कार्यक्षेत्र",
+    "filter_violence": "हिंसा",
+    "what_happened": "क्या हुआ था",
+    "judgement": "न्यायालय का फैसला",
+    "how_it_helps": "यह कैसे मदद करता है"
   }
 }

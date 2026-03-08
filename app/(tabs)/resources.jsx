@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
 
 export default function Resources() {
   const { t, i18n } = useTranslation();
