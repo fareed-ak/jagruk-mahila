@@ -16,9 +16,10 @@
   "home": {
     "title": "Jagruk Mahila",
     "subtitle": "Empowering Women Through Knowledge and Rights",
-    "explore": "Explore Services",
-    "explore_heading": "Explore Services",
-    "dev_placeholder": "This section is under development"
+    "about_title": "About Jagruk Mahila",
+    "about_text": "Jagruk Mahila is a digital resource hub dedicated to the legal empowerment and socio-economic advancement of women.\n\nThe platform simplifies complex judicial frameworks into accessible, practical guidance — transforming intimidating legal statutes into everyday tools for personal security and agency.\n\nIt functions as a critical first point of contact for crisis support, prioritizing immediate safety through emergency triage while fostering long-term justice through informed awareness and advocacy.",
+    "explore": "Know Your Rights",
+    "explore_heading": "Know Your Rights"
   },
   "categories": {
     "constitution": "Indian Constitution",
