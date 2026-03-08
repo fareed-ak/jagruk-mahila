@@ -61,6 +61,20 @@ function Home() {
         bounces={true}
       >
         <View style={styles.content}>
+          {/* About Section */}
+          <Text style={[styles.aboutTitle, isRTL && styles.textRTL]}>
+            {t('home.about_title')}
+          </Text>
+          
+          <View style={[styles.aboutContent, isRTL && styles.aboutContentRTL]}>
+            <Text style={[styles.aboutText, isRTL && styles.textRTL]}>
+              {t('home.about_text')}
+            </Text>
+          </View>
+          
+          {/* Separator */}
+          <View style={styles.separator} />
+          
           {/* Section Heading */}
           <Text style={styles.sectionHeading}>{t('home.explore_heading')}</Text>
           
@@ -100,19 +114,6 @@ function Home() {
                 <Text style={styles.categoryText}>{t(`categories.${categories[6].key}`)}</Text>
               </TouchableOpacity>
             )}
-          </View>
-
-          {/* Placeholder Section Banner */}
-          <View style={styles.placeholderBanner}>
-            <Ionicons 
-              name="construct-outline" 
-              size={24} 
-              color="#8C6B55" 
-              style={styles.placeholderIcon}
-            />
-            <Text style={styles.placeholderText}>
-              {t('home.dev_placeholder')}
-            </Text>
           </View>
         </View>
       </ScrollView>
@@ -170,6 +171,33 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 24,
   },
+  aboutTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.text,
+    marginBottom: 16,
+    textAlign: 'left',
+  },
+  aboutContent: {
+    marginBottom: 24,
+  },
+  aboutContentRTL: {
+    direction: 'rtl',
+  },
+  aboutText: {
+    fontSize: 16,
+    color: Colors.textSecondary,
+    lineHeight: 24,
+    textAlign: 'left',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: Colors.backgroundSecondary,
+    marginVertical: 20,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
   sectionHeading: {
     fontSize: 22,
     fontWeight: '600',
@@ -221,30 +249,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 18,
     fontFamily: 'System',
-  },
-  placeholderBanner: {
-    backgroundColor: '#FDF6EE',
-    borderWidth: 2,
-    borderColor: '#E8927C', // primary light
-    borderStyle: 'dashed',
-    borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  placeholderEmoji: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  placeholderIcon: {
-    marginBottom: 8,
-  },
-  placeholderText: {
-    fontSize: 15,
-    color: '#8C6B55', // warm brown-grey
-    textAlign: 'center',
-    fontFamily: 'System',
-    lineHeight: 20,
   },
 });
 
