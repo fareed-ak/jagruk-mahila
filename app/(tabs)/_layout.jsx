@@ -11,33 +11,43 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: 'Home',
+          tabBarIcon: 'home-outline',
+          tabBarIconFocused: 'home',
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="helpline"
         options={{
-          title: 'Explore',
+          title: 'Helpline',
+          tabBarIcon: 'call-outline',
+          tabBarIconFocused: 'call',
         }}
       />
       <Tabs.Screen
         name="cases"
         options={{
           title: 'Cases',
+          tabBarIcon: 'book-outline',
+          tabBarIconFocused: 'book',
         }}
       />
       <Tabs.Screen
         name="chat"
         options={{
           title: 'Chat',
+          tabBarIcon: 'chatbubble-ellipses-outline',
+          tabBarIconFocused: 'chatbubble-ellipses',
         }}
       />
       <Tabs.Screen
-        name="helpline"
+        name="more"
         options={{
-          title: 'Help',
+          title: 'More',
+          tabBarIcon: 'ellipsis-horizontal-circle-outline',
+          tabBarIconFocused: 'ellipsis-horizontal-circle',
         }}
       />
     </Tabs>
