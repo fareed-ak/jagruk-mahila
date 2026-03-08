@@ -10,7 +10,8 @@
     "more": "More"
   },
   "common": {
-    "read_more": "Read More"
+    "read_more": "Read More",
+    "cancel": "Cancel"
   },
   "home": {
     "title": "Jagruk Mahila",
@@ -29,10 +30,62 @@
     "other": "Other Crimes"
   },
   "helpline": {
-    "title": "Helpline",
+    "title": "Helplines",
     "subtitle": "Call for immediate assistance",
     "section_heading": "Helplines",
-    "call": "Call Now"
+    "emergency_banner": "In an emergency, call 112 immediately",
+    "emergency_section_title": "Emergency Helplines",
+    "organizations_section_title": "National Commissions & Ministries",
+    "call": "Call",
+    "email_action": "Email",
+    "visit": "Visit",
+    "available": "Available",
+    "hours": "Hours",
+    "address": "Address",
+    "landline": "Landline",
+    "cug_mobile": "CUG Mobile",
+    "ncw": {
+      "name": "National Commission for Women (NCW)",
+      "address": "Plot-21, Jasola Institutional Area, New Delhi – 110025, India",
+      "epabx_label": "EPABX",
+      "complaint_label": "Complaint Queries",
+      "complaint_hours": "Working Days, 9:00 AM – 5:30 PM",
+      "email_general_label": "General Email",
+      "email_complaint_label": "Complaint & Investigation",
+      "portal_label": "NCW Complaint Portal",
+      "website_label": "NCW Official Website"
+    },
+    "nhrc": {
+      "name": "National Human Rights Commission (NHRC)",
+      "address": "Manav Adhikar Bhavan, C-Block, GPO Complex, INA, New Delhi – 110023",
+      "helpline_label": "Helpline",
+      "general_label": "General / Complaints",
+      "email_complaint_label": "Complaint Email",
+      "email_general_label": "General Email"
+    },
+    "mosje": {
+      "name": "Ministry of Social Justice & Empowerment (MoSJE)",
+      "description": "Focuses on welfare of marginalized sections including disabled, elderly, and backward classes.",
+      "minister_label": "Union Minister's Office",
+      "secretary_label": "Secretary",
+      "website_label": "Official Website"
+    },
+    "numbers": {
+      "emergency_112": "Emergency Response",
+      "women_181": "National Women Helpline",
+      "distress_1091": "Women in Distress",
+      "ncw_full": "NCW 24x7 Helpline",
+      "ncw_short": "NCW Short-Code Helpline",
+      "cyber_1930": "Cyber Crime Helpline"
+    },
+    "purposes": {
+      "emergency_112": "Pan-India single number for Police, Fire, and Health emergencies",
+      "women_181": "A national-level helpline number for women in distress",
+      "distress_1091": "Specific helpline for women in distress, managed by local police",
+      "ncw_full": "Direct helpline number for the National Commission for Women",
+      "ncw_short": "New short-code number launched by NCW for quicker access",
+      "cyber_1930": "For reporting cyber-related crimes"
+    }
   },
   "helplines": {
     "emergency": "Emergency Helpline",
