@@ -18,7 +18,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#E6F4FE"
+        "backgroundColor": "#ff6b8a"
       },
       "package": "com.jagrukmahila.app"
     },
