@@ -30,6 +30,20 @@
     "cyber": "Cyber Crimes",
     "other": "Other Crimes"
   },
+  "cases": {
+    "title": "Landmark Cases",
+    "banner": "These cases shaped the laws that protect you today.",
+    "filter_all": "All",
+    "filter_maintenance": "Maintenance",
+    "filter_triple_talaq": "Triple Talaq",
+    "filter_workplace": "Workplace",
+    "filter_violence": "Violence",
+    "what_happened": "What Happened",
+    "judgement": "Judgement",
+    "how_it_helps": "How It Helps You Today",
+    "court_label": "Court",
+    "year_label": "Year"
+  },
   "helpline": {
     "title": "Helplines",
     "subtitle": "Call for immediate assistance",

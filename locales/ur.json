@@ -94,5 +94,17 @@
     "ncw": "این سی ڈبلیو",
     "ncw_short": "این سی ڈبلیو شارٹ کوڈ",
     "cyber": "سائبر جرائم"
+  },
+  "cases": {
+    "title": "تاریخی کیسز",
+    "banner": "ان کیسوں نے آج آپ کی حفاظت کرنے والے قوانین کو شکل دی ہے۔",
+    "filter_all": "تمام",
+    "filter_maintenance": "نان نفقہ",
+    "filter_triple_talaq": "طلاق ثلاثہ",
+    "filter_workplace": "کام کی جگہ",
+    "filter_violence": "تشدد",
+    "what_happened": "کیا ہوا تھا",
+    "judgement": "عدالت کا فیصلہ",
+    "how_it_helps": "یہ کیسے مدد کرتا ہے"
   }
 }
