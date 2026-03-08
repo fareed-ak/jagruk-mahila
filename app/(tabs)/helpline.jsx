@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
 
 function Helpline() {
@@ -11,12 +12,12 @@ function Helpline() {
   const isRTL = I18nManager.isRTL;
 
   const helplines = [
-    { id: "emergency", number: "112", color: "#C0392B", emoji: "🚨" },
-    { id: "national_women", number: "181", color: "#E8927C", emoji: "👩" },
-    { id: "distress", number: "1091", color: "#F5A623", emoji: "🆘" },
-    { id: "ncw", number: "7827170170", color: "#C0392B", emoji: "⚖️" },
-    { id: "ncw_short", number: "14490", color: "#E8927C", emoji: "📞" },
-    { id: "cyber", number: "1930", color: "#F5A623", emoji: "💻" }
+    { id: "emergency", number: "112", color: "#C0392B", icon: "call" },
+    { id: "national_women", number: "181", color: "#E8927C", icon: "call" },
+    { id: "distress", number: "1091", color: "#F5A623", icon: "call" },
+    { id: "ncw", number: "7827170170", color: "#C0392B", icon: "call" },
+    { id: "ncw_short", number: "14490", color: "#E8927C", icon: "call" },
+    { id: "cyber", number: "1930", color: "#F5A623", icon: "call" }
   ];
 
   const handleCall = (number) => {
@@ -74,7 +75,12 @@ function Helpline() {
                     styles.leftContent, 
                     isRTL && styles.leftContentRTL
                   ]}>
-                    <Text style={styles.emoji}>{helpline.emoji}</Text>
+                    <Ionicons 
+                      name={helpline.icon} 
+                      size={24} 
+                      color={helpline.color}
+                      style={styles.helplineIcon}
+                    />
                     <View style={styles.helplineInfo}>
                       <Text style={[
                         styles.helplineName,
@@ -195,6 +201,9 @@ const styles = StyleSheet.create({
   },
   emoji: {
     fontSize: 32,
+    marginRight: 16,
+  },
+  helplineIcon: {
     marginRight: 16,
   },
   helplineInfo: {

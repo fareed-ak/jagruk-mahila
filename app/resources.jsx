@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Resources() {
   const { t, i18n } = useTranslation();
@@ -117,30 +118,34 @@ export default function Resources() {
     setSelectedResource(null);
   };
 
-  const getCategoryEmoji = (category) => {
-    const emojiMap = {
-      constitution: "⚖️",
-      cyber: "💻",
-      marriage: "💍",
-      reproductive: "🏥",
-      bns: "📜",
-      sexual: "🛡️",
-      other: "📋"
+  const getCategoryIcon = (category) => {
+    const iconMap = {
+      constitution: "scale-outline",
+      cyber: "laptop-outline",
+      marriage: "heart-outline", 
+      reproductive: "medical-outline",
+      bns: "document-text-outline",
+      sexual: "shield-outline",
+      other: "list-outline"
     };
-    return emojiMap[category] || "📄";
+    return iconMap[category] || "document-outline";
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
+    <SafeAreaView style={[styles.container, isRTL && styles.containerRTL]}>
+      <StatusBar style="dark" backgroundColor="#FDF6EE" />
       
-      {/* Header */}
+      {/* Back Button */}
       <View style={styles.header}>
         <TouchableOpacity 
-          style={styles.backButton}
+          style={styles.backButton} 
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>{isRTL ? "→" : "←"}</Text>
+          <Ionicons 
+            name={isRTL ? "arrow-forward-circle" : "arrow-back-circle"} 
+            size={32} 
+            color="#C0392B" 
+          />
         </TouchableOpacity>
         <Text style={[styles.title, isRTL && styles.textRTL]}>
           {t('nav.resources')}
@@ -150,9 +155,12 @@ export default function Resources() {
 
       {cat && (
         <View style={[styles.categoryHeader, isRTL && styles.categoryHeaderRTL]}>
-          <Text style={[styles.categoryEmoji, isRTL && styles.categoryEmojiRTL]}>
-            {getCategoryEmoji(cat)}
-          </Text>
+          <Ionicons 
+            name={getCategoryIcon(cat)} 
+            size={24} 
+            color="#C0392B"
+            style={[styles.categoryIcon, isRTL && styles.categoryIconRTL]}
+          />
           <Text style={[styles.categoryTitle, isRTL && styles.textRTL]}>
             {t(`categories.${cat}`)}
           </Text>
@@ -238,8 +246,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FDF6EE',
   },
-  header: {
+  backButton: {
+    padding: 4,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A0A00',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40, // Same as back button width
+  },  header: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#6B2D8B',
@@ -282,8 +309,13 @@ const styles = StyleSheet.create({
   categoryEmoji: {
     fontSize: 24,
     marginRight: 10,
+  },  categoryIcon: {
+    marginRight: 12,
   },
-  categoryEmojiRTL: {
+  categoryIconRTL: {
+    marginRight: 0,
+    marginLeft: 12,
+  },  categoryEmojiRTL: {
     marginRight: 0,
     marginLeft: 10,
   },

@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
 
 const { width } = Dimensions.get('window');
@@ -22,13 +23,13 @@ function Home() {
   const isRTL = I18nManager.isRTL;
 
   const categories = [
-    { key: "constitution", emoji: "⚖️", route: "/resources?cat=constitution" },
-    { key: "reproductive", emoji: "🏥", route: "/resources?cat=reproductive" },
-    { key: "bns", emoji: "📜", route: "/resources?cat=bns" },
-    { key: "sexual", emoji: "🛡️", route: "/resources?cat=sexual" },
-    { key: "marriage", emoji: "💍", route: "/resources?cat=marriage" },
-    { key: "cyber", emoji: "💻", route: "/resources?cat=cyber" },
-    { key: "other", emoji: "📋", route: "/resources?cat=other" }
+    { key: "constitution", icon: "scale-outline", route: "/resources?cat=constitution" },
+    { key: "reproductive", icon: "medical-outline", route: "/resources?cat=reproductive" },
+    { key: "bns", icon: "document-text-outline", route: "/resources?cat=bns" },
+    { key: "sexual", icon: "shield-outline", route: "/resources?cat=sexual" },
+    { key: "marriage", icon: "heart-outline", route: "/resources?cat=marriage" },
+    { key: "cyber", icon: "laptop-outline", route: "/resources?cat=cyber" },
+    { key: "other", icon: "list-outline", route: "/resources?cat=other" }
   ];
 
   const handleCategoryPress = (route) => {
@@ -71,7 +72,12 @@ function Home() {
                 onPress={() => handleCategoryPress(category.route)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+                <Ionicons 
+                  name={category.icon} 
+                  size={32} 
+                  color="#C0392B" 
+                  style={styles.categoryIcon}
+                />
                 <Text style={styles.categoryText}>{t(`categories.${category.key}`)}</Text>
               </TouchableOpacity>
             ))}
@@ -84,7 +90,12 @@ function Home() {
                 onPress={() => handleCategoryPress(categories[6].route)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.categoryEmoji}>{categories[6].emoji}</Text>
+                <Ionicons 
+                  name={categories[6].icon} 
+                  size={32} 
+                  color="#C0392B" 
+                  style={styles.categoryIcon}
+                />
                 <Text style={styles.categoryText}>{t(`categories.${categories[6].key}`)}</Text>
               </TouchableOpacity>
             )}
@@ -92,7 +103,12 @@ function Home() {
 
           {/* Placeholder Section Banner */}
           <View style={styles.placeholderBanner}>
-            <Text style={styles.placeholderEmoji}>🚧</Text>
+            <Ionicons 
+              name="construct-outline" 
+              size={24} 
+              color="#8C6B55" 
+              style={styles.placeholderIcon}
+            />
             <Text style={styles.placeholderText}>
               {t('home.dev_placeholder')}
             </Text>
@@ -194,6 +210,9 @@ const styles = StyleSheet.create({
     fontSize: 32,
     marginBottom: 8,
   },
+  categoryIcon: {
+    marginBottom: 8,
+  },
   categoryText: {
     fontSize: 13,
     fontWeight: '500',
@@ -214,6 +233,9 @@ const styles = StyleSheet.create({
   },
   placeholderEmoji: {
     fontSize: 24,
+    marginBottom: 8,
+  },
+  placeholderIcon: {
     marginBottom: 8,
   },
   placeholderText: {
