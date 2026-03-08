@@ -6,7 +6,8 @@
     "chat": "Chat",
     "help": "Help",
     "helpline": "Helpline", 
-    "resources": "Resources"
+    "resources": "Resources",
+    "more": "More"
   },
   "common": {
     "read_more": "Read More"
