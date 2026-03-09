@@ -8,7 +8,7 @@ import { changeLanguage } from '../app/_layout';
 
 const LANGUAGE_STORAGE_KEY = '@jagruk_mahila:language';
 
-const TopBar = () => {
+const TopBar = ({ showLanguage = false }) => {
   const { i18n, t } = useTranslation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
@@ -49,52 +49,56 @@ const TopBar = () => {
         <Text style={styles.appTitle}>{getAppTitle()}</Text>
       </View>
 
-      {/* Language Selector with Globe Icon */}
-      <TouchableOpacity 
-        style={styles.languageSelector}
-        onPress={() => setDropdownVisible(true)}
-      >
-        <Ionicons name="globe-outline" size={20} color="#8C6B55" />
-        <Text style={styles.languageText}>{getCurrentLanguageLabel()}</Text>
-        <Ionicons name="chevron-down" size={16} color="#8C6B55" />
-      </TouchableOpacity>
-
-      {/* Language Dropdown Modal */}
-      <Modal
-        visible={dropdownVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setDropdownVisible(false)}
-      >
+      {/* Language Selector with Globe Icon - Only show if showLanguage is true */}
+      {showLanguage && (
         <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setDropdownVisible(false)}
+          style={styles.languageSelector}
+          onPress={() => setDropdownVisible(true)}
         >
-          <View style={styles.dropdown}>
-            {languages.map((language) => (
-              <TouchableOpacity
-                key={language.code}
-                style={[
-                  styles.dropdownItem,
-                  i18n.language === language.code && styles.activeDropdownItem
-                ]}
-                onPress={() => handleLanguageChange(language.code)}
-              >
-                <Text style={[
-                  styles.dropdownItemText,
-                  i18n.language === language.code && styles.activeDropdownItemText
-                ]}>
-                  {language.nativeLabel}
-                </Text>
-                {i18n.language === language.code && (
-                  <Ionicons name="checkmark" size={16} color="#C0392B" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Ionicons name="globe-outline" size={20} color="#8C6B55" />
+          <Text style={styles.languageText}>{getCurrentLanguageLabel()}</Text>
+          <Ionicons name="chevron-down" size={16} color="#8C6B55" />
         </TouchableOpacity>
-      </Modal>
+      )}
+
+      {/* Language Dropdown Modal - Only show if showLanguage is true */}
+      {showLanguage && (
+        <Modal
+          visible={dropdownVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setDropdownVisible(false)}
+        >
+          <TouchableOpacity 
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPress={() => setDropdownVisible(false)}
+          >
+            <View style={styles.dropdown}>
+              {languages.map((language) => (
+                <TouchableOpacity
+                  key={language.code}
+                  style={[
+                    styles.dropdownItem,
+                    i18n.language === language.code && styles.activeDropdownItem
+                  ]}
+                  onPress={() => handleLanguageChange(language.code)}
+                >
+                  <Text style={[
+                    styles.dropdownItemText,
+                    i18n.language === language.code && styles.activeDropdownItemText
+                  ]}>
+                    {language.nativeLabel}
+                  </Text>
+                  {i18n.language === language.code && (
+                    <Ionicons name="checkmark" size={16} color="#C0392B" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -112,10 +116,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   appTitle: {
-    fontSize: 20,
+    fontSize: 24,
     color: '#1A0A00', // near-black ink
     fontFamily: 'System',
-    fontWeight: '600',
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   languageSelector: {
     flexDirection: 'row',
