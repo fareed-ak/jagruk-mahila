@@ -36,8 +36,8 @@ function TabBar({ state, descriptors, navigation }) {
     {
       name: 'more',
       label: 'More',
-      iconFilled: 'ellipsis-horizontal-circle',
-      iconOutline: 'ellipsis-horizontal-circle-outline',
+      iconFilled: 'grid',
+      iconOutline: 'grid-outline',
     },
   ];
 
