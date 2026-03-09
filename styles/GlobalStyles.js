@@ -30,19 +30,19 @@ export const Colors = {
 };
 
 export const Typography = {
-  // Font Sizes - Moderately increased for better readability
-  displayLarge: 34,
-  displayMedium: 26,
-  displaySmall: 22,
-  headlineLarge: 24,
-  headlineMedium: 20,
-  headlineSmall: 18,
-  bodyLarge: 18,
-  bodyMedium: 16,
-  bodySmall: 14,
-  labelLarge: 16,
-  labelMedium: 14,
-  labelSmall: 12,
+  // Font Sizes - Increased by 15-20% for better readability
+  displayLarge: 40,
+  displayMedium: 30,
+  displaySmall: 26,
+  headlineLarge: 28,
+  headlineMedium: 24,
+  headlineSmall: 21,
+  bodyLarge: 21,
+  bodyMedium: 19,
+  bodySmall: 16,
+  labelLarge: 19,
+  labelMedium: 16,
+  labelSmall: 14,
   
   // Font Weights - Slightly bolder as default
   weightLight: '400',
