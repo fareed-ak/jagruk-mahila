@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, I18nManager, Modal, Pressable } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, I18nManager, Modal, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
@@ -143,26 +143,14 @@ export default function Cases() {
       
       <ScrollView style={GlobalStyles.scrollContainer} showsVerticalScrollIndicator={false}>
         {/* Info Banner */}
-        <View style={[
-          GlobalStyles.infoBanner,
-          { backgroundColor: '#FDF6EE', borderLeftColor: '#C0392B', borderLeftWidth: 4 }
-        ]}>
-          <View style={[GlobalStyles.infoBannerContent, isRTL && { flexDirection: 'row-reverse' }]}>
-            <Ionicons 
-              name="information-circle" 
-              size={20} 
-              color="#C0392B" 
-              style={{ marginRight: isRTL ? 0 : 8, marginLeft: isRTL ? 8 : 0 }}
-            />
-            <Text style={[
-              GlobalStyles.infoBannerText,
-              { textAlign: 'center', flex: 1 },
-              isRTL && { textAlign: 'center' }
-            ]}>
+        <View style={styles.infoBanner}>
+          <View style={styles.infoBannerContent}>
+            <Text style={[styles.infoBannerText, isRTL && { textAlign: 'center' }]}>
               {t('cases.banner')}
             </Text>
           </View>
         </View>
+
 
         {/* Category Dropdown */}
         <View style={{
@@ -239,3 +227,24 @@ export default function Cases() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  infoBanner: {
+    backgroundColor: '#C0392B',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    marginTop: 20,
+    borderRadius: 12,
+  },
+  infoBannerContent: {
+    alignItems: 'center',
+  },
+  infoBannerText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+});

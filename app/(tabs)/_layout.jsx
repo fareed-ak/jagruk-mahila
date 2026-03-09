@@ -46,15 +46,8 @@ export default function TabLayout() {
         name="more"
         options={{
           title: 'More',
-          tabBarIcon: 'ellipsis-horizontal-circle-outline',
-          tabBarIconFocused: 'ellipsis-horizontal-circle',
-        }}
-      />
-      <Tabs.Screen
-        name="resources"
-        options={{
-          href: null,
-          title: 'Resources',
+          tabBarIcon: 'grid-outline',
+          tabBarIconFocused: 'grid',
         }}
       />
     </Tabs>

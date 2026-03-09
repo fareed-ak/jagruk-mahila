@@ -109,5 +109,24 @@
     "ncw": "NCW Helpline",
     "ncw_short": "NCW Short Code",
     "cyber": "Cyber Crime Helpline"
+  },
+  "more": {
+    "title": "Info and Settings",
+    "faqs": "FAQs",
+    "faqs_subtitle": "Frequently asked questions",
+    "faqs_banner": "Tap any question to read the answer.",
+    "about": "About the App",
+    "about_subtitle": "Our mission and team",
+    "language": "Language Settings",
+    "language_subtitle": "Change display language",
+    "privacy": "Privacy Policy",
+    "privacy_subtitle": "How we handle your data",
+    "share": "Share App",
+    "share_subtitle": "Spread the word",
+    "share_message": "Check out Jagruk Mahila — an app for women's rights and legal awareness in India.",
+    "back": "Back",
+    "section_info": "INFORMATION",
+    "section_settings": "SETTINGS",
+    "section_legal": "LEGAL & SHARE"
   }
 }
