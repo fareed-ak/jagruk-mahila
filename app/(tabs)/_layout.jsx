@@ -50,16 +50,6 @@ export default function TabLayout() {
           tabBarIconFocused: 'grid',
         }}
       />
-      <Tabs.Screen
-        name="resources"
-        options={{
-          href: null,
-          title: 'Resources',
-        }}
-      />
-      <Tabs.Screen name="faq" options={{ href: null, title: 'FAQ' }} />
-      <Tabs.Screen name="about" options={{ href: null, title: 'About' }} />
-      <Tabs.Screen name="privacy" options={{ href: null, title: 'Privacy Policy' }} />
     </Tabs>
   );
 }

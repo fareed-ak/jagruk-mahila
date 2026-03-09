@@ -12,8 +12,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { faqs } from '../../constants/faqData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
+import { faqs } from '../constants/faqData';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
 
 export default function FAQ() {
   const { t, i18n } = useTranslation();
@@ -63,16 +63,20 @@ export default function FAQ() {
   };
 
   return (
-    <SafeAreaView style={[GlobalStyles.container, isRTL && styles.containerRTL]}>
+    <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="light" backgroundColor={Colors.primary} />
       
       {/* Hero Band */}
       <View style={styles.heroBand}>
         <TouchableOpacity 
-          style={styles.backButton} 
+          style={GlobalStyles.backButton} 
           onPress={() => router.back()}
         >
-          <Text style={styles.backArrow}>{isRTL ? '→' : '←'}</Text>
+          <Ionicons 
+            name={isRTL ? "arrow-forward" : "arrow-back"} 
+            size={20} 
+            color={Colors.backButtonIcon} 
+          />
         </TouchableOpacity>
         <Text style={styles.heroTitle}>{t('more.faqs')}</Text>
         <View style={styles.backButtonSpacer} />
@@ -99,9 +103,6 @@ export default function FAQ() {
 }
 
 const styles = StyleSheet.create({
-  containerRTL: {
-    flexDirection: 'row-reverse',
-  },
 
   // Hero Band Styles
   heroBand: {

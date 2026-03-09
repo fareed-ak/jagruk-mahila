@@ -11,20 +11,21 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
-import { privacyContent } from '../../constants/privacyData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
+import { Ionicons } from '@expo/vector-icons';
+import { aboutContent, aboutLabels } from '../constants/aboutData';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
 
-export default function Privacy() {
+export default function About() {
   const { t, i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
   const currentLang = i18n.language || 'en';
 
-  const renderSection = (item, index) => {
-    const heading = item.heading[currentLang] || item.heading.en;
-    const body = item.body[currentLang] || item.body.en;
+  const renderSection = (sectionKey, content, labelKey, isDisclaimer = false) => {
+    const heading = aboutLabels[labelKey][currentLang] || aboutLabels[labelKey].en;
+    const body = content[currentLang] || content.en;
 
     return (
-      <View key={item.id} style={styles.sectionCard}>
+      <View key={sectionKey} style={[styles.sectionCard, isDisclaimer && styles.disclaimerCard]}>
         <Text style={[styles.sectionHeading, isRTL && styles.textRTL]}>
           {heading}
         </Text>
@@ -36,18 +37,25 @@ export default function Privacy() {
   };
 
   return (
-    <SafeAreaView style={[GlobalStyles.container, isRTL && styles.containerRTL]}>
+    <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="light" backgroundColor={Colors.primary} />
       
       {/* Hero Band */}
       <View style={styles.heroBand}>
         <TouchableOpacity 
-          style={styles.backButton} 
+          style={GlobalStyles.backButton} 
           onPress={() => router.back()}
         >
-          <Text style={styles.backArrow}>{isRTL ? '→' : '←'}</Text>
+          <Ionicons 
+            name={isRTL ? "arrow-forward" : "arrow-back"} 
+            size={20} 
+            color={Colors.backButtonIcon} 
+          />
         </TouchableOpacity>
-        <Text style={styles.heroTitle}>{t('more.privacy')}</Text>
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text style={styles.heroTitle}>Jagruk Mahila</Text>
+          <Text style={styles.heroVersion}>Version {aboutContent.version}</Text>
+        </View>
         <View style={styles.backButtonSpacer} />
       </View>
 
@@ -57,21 +65,15 @@ export default function Privacy() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {privacyContent.map((item, index) => renderSection(item, index))}
-        
-        {/* Last Updated Note */}
-        <Text style={[styles.lastUpdatedText, isRTL && styles.textRTL]}>
-          Last updated: March 2026
-        </Text>
+        {renderSection('mission', aboutContent.mission, 'mission_heading')}
+        {renderSection('what_we_offer', aboutContent.what_we_offer, 'what_we_offer_heading')}
+        {renderSection('disclaimer', aboutContent.disclaimer, 'disclaimer_heading', true)}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  containerRTL: {
-    flexDirection: 'row-reverse',
-  },
 
   // Hero Band Styles
   heroBand: {
@@ -96,11 +98,16 @@ const styles = StyleSheet.create({
     width: 36,
   },
   heroTitle: {
-    flex: 1,
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  heroVersion: {
+    color: '#FFFFFF',
+    opacity: 0.8,
+    fontSize: 12,
+    marginTop: 2,
   },
 
   // Scroll Container Styles
@@ -122,27 +129,23 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     ...Shadows.small,
   },
+  disclaimerCard: {
+    backgroundColor: '#FFF8F0',
+    borderLeftWidth: 3,
+    borderLeftColor: '#F5A623',
+  },
   sectionHeading: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#C0392B',
+    color: Colors.primary,
+    marginBottom: 8,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 8,
   },
   sectionBody: {
-    fontSize: 14,
+    fontSize: 15,
     color: '#4A3728',
-    lineHeight: 22,
-  },
-
-  // Last Updated Styles
-  lastUpdatedText: {
-    fontSize: 12,
-    color: '#8C6B55',
-    textAlign: 'center',
-    paddingVertical: 24,
-    marginTop: Spacing.medium,
+    lineHeight: 24,
   },
 
   // RTL Text Styles

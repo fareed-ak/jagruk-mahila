@@ -57,7 +57,7 @@ export default function More() {
           icon: 'help-circle-outline',
           title: t('more.faqs'),
           subtitle: t('more.faqs_subtitle'),
-          onPress: () => router.push('/(tabs)/faq'),
+          onPress: () => router.push('/faq'),
           showChevron: true,
         },
         {
@@ -65,7 +65,7 @@ export default function More() {
           icon: 'information-circle-outline',
           title: t('more.about'),
           subtitle: t('more.about_subtitle'),
-          onPress: () => router.push('/(tabs)/about'),
+          onPress: () => router.push('/about'),
           showChevron: true,
         },
       ]
@@ -91,7 +91,7 @@ export default function More() {
           icon: 'shield-checkmark-outline',
           title: t('more.privacy'),
           subtitle: t('more.privacy_subtitle'),
-          onPress: () => router.push('/(tabs)/privacy'),
+          onPress: () => router.push('/privacy'),
           showChevron: true,
         },
         {
@@ -109,7 +109,7 @@ export default function More() {
   const renderMenuItem = (item) => (
     <TouchableOpacity
       key={item.id}
-      style={[styles.menuItem, isRTL && styles.menuItemRTL]}
+      style={styles.menuItem}
       onPress={item.onPress}
       activeOpacity={0.7}
     >
@@ -200,7 +200,6 @@ export default function More() {
           <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
             {t('more.title')}
           </Text>
-          <View style={styles.heroLine} />
         </View>
       </View>
 
@@ -223,24 +222,17 @@ const styles = StyleSheet.create({
   // Hero Band Styles
   heroBand: {
     backgroundColor: Colors.primary,
-    paddingVertical: Spacing.large,
+    paddingVertical: 24,
     paddingHorizontal: Spacing.large,
   },
   heroContent: {
     alignItems: 'center',
   },
   heroTitle: {
-    fontSize: Typography.headlineLarge,
-    fontWeight: Typography.weightBold,
+    fontSize: 22,
+    fontWeight: '600',
     color: Colors.textLight,
     textAlign: 'center',
-    marginBottom: Spacing.small,
-  },
-  heroLine: {
-    width: 60,
-    height: 3,
-    backgroundColor: Colors.secondary,
-    borderRadius: 2,
   },
 
   // Scroll Container Styles

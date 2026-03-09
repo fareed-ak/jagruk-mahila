@@ -31,25 +31,25 @@ export const Colors = {
 
 export const Typography = {
   // Font Sizes - Increased by 15-20% for better readability
-  displayLarge: 40,
-  displayMedium: 30,
-  displaySmall: 26,
+  displayLarge: 25,
+  displayMedium: 25,
+  displaySmall: 24,
   headlineLarge: 28,
-  headlineMedium: 24,
-  headlineSmall: 21,
-  bodyLarge: 21,
-  bodyMedium: 19,
-  bodySmall: 16,
-  labelLarge: 19,
-  labelMedium: 16,
-  labelSmall: 14,
+  headlineMedium: 26,
+  headlineSmall: 24,
+  bodyLarge: 24,
+  bodyMedium: 22,
+  bodySmall: 20,
+  labelLarge: 22,
+  labelMedium: 20,
+  labelSmall: 18,
   
   // Font Weights - Slightly bolder as default
-  weightLight: '400',
-  weightRegular: '500',
-  weightMedium: '600',
-  weightSemiBold: '700',
-  weightBold: '800',
+  weightLight: '300',
+  weightRegular: '420',
+  weightMedium: '480',
+  weightSemiBold: '550',
+  weightBold: '600',
 };
 
 export const Spacing = {
@@ -319,16 +319,16 @@ export const GlobalStyles = StyleSheet.create({
   },
 
   caseTitle: {
-    fontSize: Typography.bodyLarge,
-    fontWeight: Typography.weightSemiBold,
+    fontSize: 16,
+    fontWeight: '600',
     color: Colors.text,
     marginBottom: 4,
   },
 
   caseYear: {
-    fontSize: Typography.bodySmall,
+    fontSize: 13,
     color: Colors.textSecondary,
-    fontWeight: Typography.weightMedium,
+    fontWeight: '500',
   },
 
   caseContent: {
@@ -341,17 +341,17 @@ export const GlobalStyles = StyleSheet.create({
   },
 
   caseSectionTitle: {
-    fontSize: Typography.bodyMedium,
-    fontWeight: Typography.weightSemiBold,
+    fontSize: 15,
+    fontWeight: '600',
     color: Colors.primary,
     marginBottom: 8,
   },
 
   caseSectionText: {
-    fontSize: Typography.bodyMedium,
-    fontWeight: Typography.weightMedium,
+    fontSize: 14,
+    fontWeight: '500',
     color: Colors.text,
-    lineHeight: 24,
+    lineHeight: 20,
   },
 
   // Dropdown Styles
@@ -427,15 +427,15 @@ export const GlobalStyles = StyleSheet.create({
   },
 
   modalOptionText: {
-    fontSize: Typography.bodyMedium,
-    fontWeight: Typography.weightMedium,
+    fontSize: 15,
+    fontWeight: '500',
     color: Colors.text,
     flex: 1,
   },
 
   modalOptionTextSelected: {
     color: Colors.primary,
-    fontWeight: Typography.weightSemiBold,
+    fontWeight: '600',
   },
 
   // Info Banner Styles  

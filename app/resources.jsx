@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
+import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
 
 export default function Resources() {
   const { t, i18n } = useTranslation();
@@ -245,7 +245,6 @@ export default function Resources() {
 
 const styles = StyleSheet.create({
   containerRTL: {
-    transform: [{ scaleX: -1 }],
   },
   
   categoryHeader: {
@@ -271,8 +270,8 @@ const styles = StyleSheet.create({
   },
   
   categoryTitle: {
-    fontSize: Typography.headlineMedium,
-    fontWeight: Typography.weightSemiBold,
+    fontSize: 18,
+    fontWeight: '600',
     color: Colors.text,
     flex: 1,
   },
@@ -300,23 +299,23 @@ const styles = StyleSheet.create({
   },
   
   resourceTitle: {
-    fontSize: Typography.bodyLarge,
-    fontWeight: Typography.weightSemiBold,
+    fontSize: 16,
+    fontWeight: '600',
     color: Colors.text,
     marginBottom: Spacing.sm,
-    lineHeight: Typography.bodyLarge * 1.3,
+    lineHeight: 22,
   },
   
   resourcePreview: {
-    fontSize: Typography.bodyMedium,
+    fontSize: 14,
     color: Colors.textSecondary,
-    lineHeight: Typography.bodyMedium * 1.4,
+    lineHeight: 20,
   },
   
   readMoreText: {
-    fontSize: Typography.bodyMedium,
+    fontSize: 14,
     color: Colors.primary,
-    fontWeight: Typography.weightSemiBold,
+    fontWeight: '600',
     textAlign: 'right',
   },
   
@@ -327,10 +326,10 @@ const styles = StyleSheet.create({
   },
   
   emptyStateText: {
-    fontSize: Typography.bodyLarge,
+    fontSize: 16,
     color: Colors.textSecondary,
     textAlign: 'center',
-    lineHeight: Typography.bodyLarge * 1.4,
+    lineHeight: 22,
   },
   
   bottomSpacing: {
@@ -367,8 +366,8 @@ const styles = StyleSheet.create({
   
   modalTitle: {
     flex: 1,
-    fontSize: Typography.headlineMedium,
-    fontWeight: Typography.weightSemiBold,
+    fontSize: 18,
+    fontWeight: '600',
     color: Colors.text,
     paddingRight: Spacing.lg,
   },
@@ -383,9 +382,9 @@ const styles = StyleSheet.create({
   },
   
   closeButtonText: {
-    fontSize: Typography.displaySmall,
+    fontSize: 18,
     color: Colors.textSecondary,
-    fontWeight: Typography.weightSemiBold,
+    fontWeight: '600',
   },
   
   modalScroll: {
@@ -395,8 +394,8 @@ const styles = StyleSheet.create({
   },
   
   modalBody: {
-    fontSize: Typography.bodyLarge,
-    lineHeight: Typography.bodyLarge * 1.4,
+    fontSize: 15,
+    lineHeight: 22,
     color: Colors.text,
     paddingBottom: Spacing.xl,
   },
