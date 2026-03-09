@@ -42,7 +42,7 @@ function Home() {
       <StatusBar style="dark" backgroundColor={Colors.background} />
       
       {/* Top Bar */}
-      <TopBar />
+      <TopBar showLanguage={true} />
 
       {/* Hero Band */}
       <View style={styles.heroBand}>
