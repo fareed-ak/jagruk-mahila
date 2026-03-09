@@ -46,8 +46,8 @@ export default function TabLayout() {
         name="more"
         options={{
           title: 'More',
-          tabBarIcon: 'ellipsis-horizontal-circle-outline',
-          tabBarIconFocused: 'ellipsis-horizontal-circle',
+          tabBarIcon: 'grid-outline',
+          tabBarIconFocused: 'grid',
         }}
       />
       <Tabs.Screen
@@ -57,6 +57,9 @@ export default function TabLayout() {
           title: 'Resources',
         }}
       />
+      <Tabs.Screen name="faq" options={{ href: null, title: 'FAQ' }} />
+      <Tabs.Screen name="about" options={{ href: null, title: 'About' }} />
+      <Tabs.Screen name="privacy" options={{ href: null, title: 'Privacy Policy' }} />
     </Tabs>
   );
 }
