@@ -112,6 +112,13 @@ export default function RootLayout() {
           presentation: 'card'
         }}
       />
+      <Stack.Screen
+        name="bnss"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
     </Stack>
   );
 }
