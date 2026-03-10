@@ -71,13 +71,6 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="resources"
-        options={{
-          headerShown: false,
-          presentation: 'modal'
-        }}
-      />
-      <Stack.Screen
         name="faq"
         options={{
           headerShown: false,
