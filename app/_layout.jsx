@@ -133,6 +133,13 @@ export default function RootLayout() {
           presentation: 'card'
         }}
       />
+      <Stack.Screen
+        name="cyber"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
     </Stack>
   );
 }
