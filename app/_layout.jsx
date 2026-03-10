@@ -71,13 +71,6 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="resources"
-        options={{
-          headerShown: false,
-          presentation: 'modal'
-        }}
-      />
-      <Stack.Screen
         name="faq"
         options={{
           headerShown: false,
@@ -121,6 +114,27 @@ export default function RootLayout() {
       />
       <Stack.Screen
         name="sexual"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="marriage"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="cyber"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="other"
         options={{
           headerShown: false,
           presentation: 'card'
