@@ -135,18 +135,6 @@ export default function Cases() {
           <TopBar title={t('cases.title')} />
         </View>
 
-        <View style={styles.heroCard}>
-          <Text style={[styles.eyebrow, isRTL && styles.textRTL]}>
-            {t('cases.title')}
-          </Text>
-          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
-            {getCategoryLabel(selectedCategory)}
-          </Text>
-          <Text style={[styles.heroSubtitle, isRTL && styles.textRTL]}>
-            {t('cases.banner')}
-          </Text>
-        </View>
-
         <View style={styles.noticeCard}>
           <View style={styles.noticeIconWrap}>
             <Ionicons name="ribbon-outline" size={18} color="#FFFFFF" />
@@ -157,13 +145,6 @@ export default function Cases() {
         </View>
 
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
-            {t('cases.title')}
-          </Text>
-          <Text style={[styles.sectionSubtitle, isRTL && styles.textRTL]}>
-            {getCategoryLabel(selectedCategory)}
-          </Text>
-
           <TouchableOpacity
             style={[styles.filterTrigger, isRTL && styles.filterTriggerRTL]}
             onPress={() => setDropdownVisible(true)}
@@ -243,37 +224,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     backgroundColor: '#F8EFE3',
   },
-  heroCard: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
-    paddingHorizontal: 22,
-    paddingVertical: 24,
-    borderRadius: 28,
-    backgroundColor: '#FFF7EF',
-    borderWidth: 1,
-    borderColor: '#EAD7C5',
-    ...Shadows.small,
-  },
-  eyebrow: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: '#A65B3D',
-    marginBottom: 12,
-  },
-  heroTitle: {
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '800',
-    color: '#26140A',
-  },
-  heroSubtitle: {
-    marginTop: 10,
-    fontSize: 15,
-    lineHeight: 23,
-    color: '#6E5443',
-  },
   noticeCard: {
     marginHorizontal: Spacing.lg,
     marginTop: Spacing.lg,
@@ -284,7 +234,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    ...Shadows.medium,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   noticeIconWrap: {
     width: 36,
@@ -312,14 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#26140A',
   },
-  sectionSubtitle: {
-    marginTop: 8,
-    fontSize: 14,
-    lineHeight: 22,
-    color: '#7A6354',
-  },
   filterTrigger: {
-    marginTop: 18,
     minHeight: 58,
     borderRadius: 18,
     backgroundColor: '#FFF7EF',
