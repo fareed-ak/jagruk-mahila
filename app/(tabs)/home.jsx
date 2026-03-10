@@ -5,8 +5,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  Dimensions,
-  I18nManager
+  I18nManager,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -14,106 +14,132 @@ import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
+import GlobalStyles, {
+  Colors,
+  Spacing,
+  BorderRadius,
+  Shadows,
+} from '../../styles/GlobalStyles';
 
-const { width } = Dimensions.get('window');
-const cardWidth = (width - 48) / 2; // 2 columns with padding
+const HOME_IMAGE = require('../../assets/home-image.png');
 
 function Home() {
   const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
 
   const categories = [
-    { key: "constitution", icon: "scale-outline", route: "/constitution" },
-    { key: "reproductive", icon: "medical-outline", route: "/reproductive" },
-    { key: "bns", icon: "document-text-outline", route: "/bnss" },
-    { key: "sexual", icon: "shield-outline", route: "/sexual" },
-    { key: "marriage", icon: "heart-outline", route: "/marriage" },
-    { key: "cyber", icon: "laptop-outline", route: "/cyber" },
-    { key: "other", icon: "list-outline", route: "/other" }
+    { key: 'constitution', icon: 'scale-outline', route: '/constitution' },
+    { key: 'reproductive', icon: 'medical-outline', route: '/reproductive' },
+    { key: 'bns', icon: 'document-text-outline', route: '/bnss' },
+    { key: 'sexual', icon: 'shield-outline', route: '/sexual' },
+    { key: 'marriage', icon: 'heart-outline', route: '/marriage' },
+    { key: 'cyber', icon: 'laptop-outline', route: '/cyber' },
+    { key: 'other', icon: 'list-outline', route: '/other' },
   ];
 
-  const handleCategoryPress = (route) => {
-    router.push(route);
-  };
+  const aboutPoints = [
+    t('home.about_points.point_1'),
+    t('home.about_points.point_2'),
+    t('home.about_points.point_3'),
+    t('home.about_points.point_4'),
+  ];
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="dark" backgroundColor={Colors.background} />
 
-      {/* Top Bar */}
-      <TopBar showLanguage={true} />
-
-      {/* Hero Band */}
-      <View style={styles.heroBand}>
-        <View style={styles.heroContent}>
-          <Text style={styles.heroSubtitle}>{t('home.subtitle')}</Text>
-          <View style={styles.goldLine} />
-        </View>
-        {/* Subtle pattern overlay */}
-        <View style={styles.patternOverlay} />
-      </View>
-
-      {/* Scroll Content */}
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-        bounces={true}
       >
-        <View style={styles.content}>
-          {/* About Section */}
-          <Text style={[styles.aboutTitle, isRTL && styles.textRTL]}>
+        <View style={styles.topBarWrap}>
+          <TopBar showLanguage={true} />
+        </View>
+
+        <View style={styles.heroCard}>
+          <Text style={[styles.eyebrow, isRTL && styles.textRTL]}>
+            {t('home.hero_eyebrow')}
+          </Text>
+          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
+            {t('home.hero_title')}
+          </Text>
+          <Text style={[styles.heroSubtitle, isRTL && styles.textRTL]}>
+            {t('home.hero_subtitle')}
+          </Text>
+        </View>
+
+        <View style={styles.imageCard}>
+          <Image source={HOME_IMAGE} style={styles.heroImage} resizeMode="cover" />
+        </View>
+
+        <View style={styles.actionStack}>
+          <TouchableOpacity
+            style={styles.primaryAction}
+            activeOpacity={0.9}
+            onPress={() => router.navigate('/(tabs)/helpline')}
+          >
+            <Ionicons name="call-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.primaryActionText}>{t('home.actions.get_help')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryAction}
+            activeOpacity={0.9}
+            onPress={() => router.navigate('/(tabs)/chat')}
+          >
+            <Ionicons name="sparkles-outline" size={20} color={Colors.primary} />
+            <Text style={styles.secondaryActionText}>{t('home.actions.try_ai')}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.aboutCard}>
+          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
             {t('home.about_title')}
           </Text>
 
-          <View style={[styles.aboutContent, isRTL && styles.aboutContentRTL]}>
-            <Text style={[styles.aboutText, isRTL && styles.textRTL]}>
-              {t('home.about_text')}
-            </Text>
+          <View style={styles.aboutList}>
+            {aboutPoints.map((point, index) => (
+              <View
+                key={`about-${index}`}
+                style={[styles.aboutRow, isRTL && styles.aboutRowRTL]}
+              >
+                <View style={styles.bulletDot} />
+                <Text style={[styles.aboutPoint, isRTL && styles.textRTL]}>{point}</Text>
+              </View>
+            ))}
           </View>
+        </View>
 
-          {/* Separator */}
-          <View style={styles.separator} />
+        <View style={styles.rightsSection}>
+          <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+            {t('home.explore_heading')}
+          </Text>
+          <Text style={[styles.sectionSubtitle, isRTL && styles.textRTL]}>
+            {t('home.explore_subtitle')}
+          </Text>
 
-          {/* Section Heading */}
-          <Text style={styles.sectionHeading}>{t('home.explore_heading')}</Text>
-
-          {/* Category Grid */}
           <View style={styles.categoryGrid}>
-            {categories.slice(0, 6).map((category) => (
+            {categories.map((category) => (
               <TouchableOpacity
                 key={category.key}
-                style={[styles.categoryCard, { width: cardWidth }]}
-                onPress={() => handleCategoryPress(category.route)}
-                activeOpacity={0.8}
+                style={styles.categoryCard}
+                activeOpacity={0.85}
+                onPress={() => router.push(category.route)}
               >
+                <View style={styles.categoryIconWrap}>
+                  <Ionicons name={category.icon} size={24} color={Colors.primary} />
+                </View>
+                <Text style={[styles.categoryText, isRTL && styles.textRTL]}>
+                  {t(`categories.${category.key}`)}
+                </Text>
                 <Ionicons
-                  name={category.icon}
-                  size={32}
-                  color={Colors.primary}
-                  style={styles.categoryIcon}
+                  name={isRTL ? 'arrow-back' : 'arrow-forward'}
+                  size={16}
+                  color="#9C7D65"
                 />
-                <Text style={styles.categoryText}>{t(`categories.${category.key}`)}</Text>
               </TouchableOpacity>
             ))}
-
-            {/* Last card full-width */}
-            {categories.length > 6 && (
-              <TouchableOpacity
-                key={categories[6].key}
-                style={[styles.categoryCard, styles.fullWidthCard]}
-                onPress={() => handleCategoryPress(categories[6].route)}
-                activeOpacity={0.8}
-              >
-                <Ionicons
-                  name={categories[6].icon}
-                  size={32}
-                  color={Colors.primary}
-                  style={styles.categoryIcon}
-                />
-                <Text style={styles.categoryText}>{t(`categories.${categories[6].key}`)}</Text>
-              </TouchableOpacity>
-            )}
           </View>
         </View>
       </ScrollView>
@@ -122,133 +148,183 @@ function Home() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FDF6EE', // aged parchment background
-  },
-  heroBand: {
-    height: 120,
-    backgroundColor: Colors.primary,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-  heroContent: {
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  heroSubtitle: {
-    fontSize: 17,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    fontFamily: 'System',
-    fontWeight: '500',
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  goldLine: {
-    width: 80,
-    height: 2,
-    backgroundColor: '#F5A623', // turmeric gold
-    borderRadius: 1,
-  },
-  patternOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.1,
-    backgroundColor: 'transparent',
-    // Add background pattern here if needed
-  },
   scrollView: {
     flex: 1,
-    backgroundColor: '#FDF6EE',
+    backgroundColor: '#F8EFE3',
   },
   content: {
-    padding: 20,
-    paddingTop: 24,
+    paddingBottom: Spacing.xl,
   },
-  aboutTitle: {
-    fontSize: 20,
+  topBarWrap: {
+    paddingTop: 6,
+    paddingBottom: 4,
+    backgroundColor: '#F8EFE3',
+  },
+  heroCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.sm,
+    paddingHorizontal: 22,
+    paddingVertical: 24,
+    borderRadius: 28,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    ...Shadows.small,
+  },
+  eyebrow: {
+    fontSize: 12,
     fontWeight: '700',
-    color: Colors.text,
-    marginBottom: 16,
-    textAlign: 'left',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: '#A65B3D',
+    marginBottom: 12,
   },
-  aboutContent: {
-    marginBottom: 24,
+  heroTitle: {
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800',
+    color: '#26140A',
   },
-  aboutContentRTL: {
-    direction: 'rtl',
+  heroSubtitle: {
+    marginTop: 10,
+    fontSize: 15,
+    lineHeight: 23,
+    color: '#6E5443',
   },
-  aboutText: {
+  imageCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    borderRadius: 28,
+    overflow: 'hidden',
+    backgroundColor: '#EADBCF',
+    ...Shadows.medium,
+  },
+  heroImage: {
+    width: '100%',
+    height: 220,
+  },
+  actionStack: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    gap: 12,
+  },
+  primaryAction: {
+    minHeight: 58,
+    borderRadius: 18,
+    backgroundColor: Colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    ...Shadows.medium,
+  },
+  primaryActionText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: Colors.textSecondary,
-    lineHeight: 24,
-    textAlign: 'left',
+    fontWeight: '700',
   },
-  separator: {
-    height: 1,
-    backgroundColor: Colors.backgroundSecondary,
-    marginVertical: 20,
+  secondaryAction: {
+    minHeight: 58,
+    borderRadius: 18,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#DFC5AF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  secondaryActionText: {
+    color: Colors.primary,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  aboutCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
+    padding: 22,
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#ECDDCB',
+    ...Shadows.small,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '800',
+    color: '#26140A',
+  },
+  sectionSubtitle: {
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 22,
+    color: '#7A6354',
+  },
+  aboutList: {
+    marginTop: 16,
+    gap: 14,
+  },
+  aboutRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  aboutRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  bulletDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#C76A3D',
+    marginTop: 7,
+    marginHorizontal: 2,
+  },
+  aboutPoint: {
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 12,
+    fontSize: 15,
+    lineHeight: 23,
+    color: '#5E483B',
+  },
+  rightsSection: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
+  },
+  categoryGrid: {
+    marginTop: 16,
+    gap: 12,
+  },
+  categoryCard: {
+    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    ...Shadows.small,
+  },
+  categoryIconWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FBE9DC',
+  },
+  categoryText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: '600',
+    color: '#2A170D',
   },
   textRTL: {
     textAlign: 'right',
-  },
-  sectionHeading: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: '#1A0A00', // near-black ink
-    marginBottom: 20,
-    fontFamily: 'System',
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-  },
-  categoryCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-    minHeight: 100,
-  },
-  fullWidthCard: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    paddingHorizontal: 24,
-    minHeight: 80,
-  },
-  categoryEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  categoryIcon: {
-    marginBottom: 8,
-  },
-  categoryText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: '#1A0A00', // near-black ink
-    textAlign: 'center',
-    lineHeight: 18,
-    fontFamily: 'System',
   },
 });
 
