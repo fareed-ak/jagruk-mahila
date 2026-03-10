@@ -119,6 +119,13 @@ export default function RootLayout() {
           presentation: 'card'
         }}
       />
+      <Stack.Screen
+        name="sexual"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
     </Stack>
   );
 }
