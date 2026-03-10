@@ -60,7 +60,7 @@ export const ORGANIZATIONS = [
     id: 'nhrc',
     phones: [
       { label_key: 'helpline.nhrc.helpline_label', numbers: ['14433'] },
-      { label_key: 'helpline.nhrc.general_label', numbers: ['+91-11-24651330', '+91-11-24663333'] },
+      { label_key: 'helpline.nhrc.general_label', numbers: ['011-24651330', '011-24663333'] },
     ],
     emails: [
       { label_key: 'helpline.nhrc.email_complaint_label', address: 'complaintcell@nhrc.nic.in' },
@@ -72,8 +72,8 @@ export const ORGANIZATIONS = [
   {
     id: 'mosje',
     phones: [
-      { label_key: 'helpline.mosje.minister_label', numbers: ['+91-11-23381001', '+91-11-23381390'] },
-      { label_key: 'helpline.mosje.secretary_label', numbers: ['+91-11-23382683', '+91-11-23389184'] },
+      { label_key: 'helpline.mosje.minister_label', numbers: ['011-23381001', '011-23381390'] },
+      { label_key: 'helpline.mosje.secretary_label', numbers: ['011-23382683', '011-23389184'] },
     ],
     emails: [],
     links: [
