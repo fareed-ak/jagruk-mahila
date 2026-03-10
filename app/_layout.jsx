@@ -41,15 +41,15 @@ export default function RootLayout() {
         // Get saved language from AsyncStorage
         const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
         const languageToUse = savedLanguage || 'ur';
-        
+
         // Change i18n language
         await i18n.changeLanguage(languageToUse);
-        
+
         // Set RTL/LTR direction based on language
         const shouldBeRTL = languageToUse === 'ur';
         I18nManager.allowRTL(shouldBeRTL);
         I18nManager.forceRTL(shouldBeRTL);
-        
+
         // Save the language preference if it wasn't already saved
         if (!savedLanguage) {
           await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, languageToUse);
@@ -64,39 +64,67 @@ export default function RootLayout() {
 
   return (
     <Stack>
-      <Stack.Screen 
-        name="(tabs)" 
-        options={{ 
-          headerShown: false 
-        }} 
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false
+        }}
       />
-      <Stack.Screen 
-        name="resources" 
-        options={{ 
+      <Stack.Screen
+        name="resources"
+        options={{
           headerShown: false,
           presentation: 'modal'
-        }} 
+        }}
       />
-      <Stack.Screen 
-        name="faq" 
-        options={{ 
+      <Stack.Screen
+        name="faq"
+        options={{
           headerShown: false,
           presentation: 'modal'
-        }} 
+        }}
       />
-      <Stack.Screen 
-        name="about" 
-        options={{ 
+      <Stack.Screen
+        name="about"
+        options={{
           headerShown: false,
           presentation: 'modal'
-        }} 
+        }}
       />
-      <Stack.Screen 
-        name="privacy" 
-        options={{ 
+      <Stack.Screen
+        name="privacy"
+        options={{
           headerShown: false,
           presentation: 'modal'
-        }} 
+        }}
+      />
+      <Stack.Screen
+        name="constitution"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="reproductive"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="bnss"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
+      <Stack.Screen
+        name="sexual"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
       />
     </Stack>
   );
