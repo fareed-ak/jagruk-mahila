@@ -156,7 +156,7 @@ export default function Cases() {
           </Text>
         </View>
 
-        <View style={styles.sectionCard}>
+        <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
             {t('cases.title')}
           </Text>
@@ -181,10 +181,10 @@ export default function Cases() {
               color={Colors.primary}
             />
           </TouchableOpacity>
+        </View>
 
-          <View style={styles.caseStack}>
-            {filteredCases.map(renderCaseCard)}
-          </View>
+        <View style={styles.caseStack}>
+          {filteredCases.map(renderCaseCard)}
         </View>
 
         <Modal
@@ -301,15 +301,10 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '700',
   },
-  sectionCard: {
+  sectionHeader: {
     marginHorizontal: Spacing.lg,
     marginTop: 22,
-    padding: 22,
-    borderRadius: 26,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#ECDDCB',
-    ...Shadows.small,
+    marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 22,
@@ -354,6 +349,7 @@ const styles = StyleSheet.create({
     color: '#2A170D',
   },
   caseStack: {
+    marginHorizontal: Spacing.lg,
     marginTop: 16,
     gap: 12,
   },
