@@ -140,6 +140,13 @@ export default function RootLayout() {
           presentation: 'card'
         }}
       />
+      <Stack.Screen
+        name="other"
+        options={{
+          headerShown: false,
+          presentation: 'card'
+        }}
+      />
     </Stack>
   );
 }
