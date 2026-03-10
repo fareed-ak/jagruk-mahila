@@ -229,15 +229,6 @@ export default function More() {
           </Text>
         </View>
 
-        <View style={styles.noticeCard}>
-          <View style={styles.noticeIconWrap}>
-            <Ionicons name="settings-outline" size={18} color="#FFFFFF" />
-          </View>
-          <Text style={[styles.noticeText, isRTL && styles.textRTL]}>
-            {t('more.notice')}
-          </Text>
-        </View>
-
         <View style={styles.sectionsWrap}>
           {menuSections.map(renderSection)}
         </View>
@@ -291,33 +282,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 23,
     color: '#6E5443',
-  },
-  noticeCard: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.lg,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
-    borderRadius: 22,
-    backgroundColor: Colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    ...Shadows.medium,
-  },
-  noticeIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noticeText: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '700',
   },
   sectionsWrap: {
     marginTop: 22,
