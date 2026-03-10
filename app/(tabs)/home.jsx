@@ -28,7 +28,7 @@ function Home() {
     { key: "reproductive", icon: "medical-outline", route: "/reproductive" },
     { key: "bns", icon: "document-text-outline", route: "/bnss" },
     { key: "sexual", icon: "shield-outline", route: "/sexual" },
-    { key: "marriage", icon: "heart-outline", route: "/resources?cat=marriage" },
+    { key: "marriage", icon: "heart-outline", route: "/marriage" },
     { key: "cyber", icon: "laptop-outline", route: "/resources?cat=cyber" },
     { key: "other", icon: "list-outline", route: "/resources?cat=other" }
   ];
