@@ -270,18 +270,6 @@ function Helpline() {
           <TopBar />
         </View>
 
-        <View style={styles.heroCard}>
-          <Text style={[styles.eyebrow, isRTL && styles.textRTL]}>
-            {t('helpline.emergency_section_title')}
-          </Text>
-          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
-            {t('helpline.organizations_section_title')}
-          </Text>
-          <Text style={[styles.heroSubtitle, isRTL && styles.textRTL]}>
-            {t('helpline.emergency_banner')}
-          </Text>
-        </View>
-
         {renderEmergencyBanner()}
         {renderEmergencyHelplines()}
         {renderOrganizations()}
@@ -303,37 +291,6 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     backgroundColor: '#F8EFE3',
   },
-  heroCard: {
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
-    paddingHorizontal: 22,
-    paddingVertical: 24,
-    borderRadius: 28,
-    backgroundColor: '#FFF7EF',
-    borderWidth: 1,
-    borderColor: '#EAD7C5',
-    ...Shadows.small,
-  },
-  eyebrow: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    color: '#A65B3D',
-    marginBottom: 12,
-  },
-  heroTitle: {
-    fontSize: 30,
-    lineHeight: 36,
-    fontWeight: '800',
-    color: '#26140A',
-  },
-  heroSubtitle: {
-    marginTop: 10,
-    fontSize: 15,
-    lineHeight: 23,
-    color: '#6E5443',
-  },
   noticeCard: {
     marginHorizontal: Spacing.lg,
     marginTop: Spacing.lg,
@@ -344,7 +301,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    ...Shadows.medium,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
   noticeIconWrap: {
     width: 36,
