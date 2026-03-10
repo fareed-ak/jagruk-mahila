@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  ScrollView, 
-  TouchableOpacity, 
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
   Dimensions,
-  I18nManager 
+  I18nManager
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -24,8 +24,8 @@ function Home() {
   const isRTL = I18nManager.isRTL;
 
   const categories = [
-    { key: "constitution", icon: "scale-outline", route: "/resources?cat=constitution" },
-    { key: "reproductive", icon: "medical-outline", route: "/resources?cat=reproductive" },
+    { key: "constitution", icon: "scale-outline", route: "/constitution" },
+    { key: "reproductive", icon: "medical-outline", route: "/reproductive" },
     { key: "bns", icon: "document-text-outline", route: "/resources?cat=bns" },
     { key: "sexual", icon: "shield-outline", route: "/resources?cat=sexual" },
     { key: "marriage", icon: "heart-outline", route: "/resources?cat=marriage" },
@@ -40,7 +40,7 @@ function Home() {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="dark" backgroundColor={Colors.background} />
-      
+
       {/* Top Bar */}
       <TopBar showLanguage={true} />
 
@@ -55,8 +55,8 @@ function Home() {
       </View>
 
       {/* Scroll Content */}
-      <ScrollView 
-        style={styles.scrollView} 
+      <ScrollView
+        style={styles.scrollView}
         showsVerticalScrollIndicator={false}
         bounces={true}
       >
@@ -65,50 +65,50 @@ function Home() {
           <Text style={[styles.aboutTitle, isRTL && styles.textRTL]}>
             {t('home.about_title')}
           </Text>
-          
+
           <View style={[styles.aboutContent, isRTL && styles.aboutContentRTL]}>
             <Text style={[styles.aboutText, isRTL && styles.textRTL]}>
               {t('home.about_text')}
             </Text>
           </View>
-          
+
           {/* Separator */}
           <View style={styles.separator} />
-          
+
           {/* Section Heading */}
           <Text style={styles.sectionHeading}>{t('home.explore_heading')}</Text>
-          
+
           {/* Category Grid */}
           <View style={styles.categoryGrid}>
             {categories.slice(0, 6).map((category) => (
-              <TouchableOpacity 
-                key={category.key} 
+              <TouchableOpacity
+                key={category.key}
                 style={[styles.categoryCard, { width: cardWidth }]}
                 onPress={() => handleCategoryPress(category.route)}
                 activeOpacity={0.8}
               >
-                <Ionicons 
-                  name={category.icon} 
-                  size={32} 
-                  color={Colors.primary} 
+                <Ionicons
+                  name={category.icon}
+                  size={32}
+                  color={Colors.primary}
                   style={styles.categoryIcon}
                 />
                 <Text style={styles.categoryText}>{t(`categories.${category.key}`)}</Text>
               </TouchableOpacity>
             ))}
-            
+
             {/* Last card full-width */}
             {categories.length > 6 && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 key={categories[6].key}
                 style={[styles.categoryCard, styles.fullWidthCard]}
                 onPress={() => handleCategoryPress(categories[6].route)}
                 activeOpacity={0.8}
               >
-                <Ionicons 
-                  name={categories[6].icon} 
-                  size={32} 
-                  color={Colors.primary} 
+                <Ionicons
+                  name={categories[6].icon}
+                  size={32}
+                  color={Colors.primary}
                   style={styles.categoryIcon}
                 />
                 <Text style={styles.categoryText}>{t(`categories.${categories[6].key}`)}</Text>
