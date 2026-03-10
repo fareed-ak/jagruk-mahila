@@ -57,7 +57,7 @@ function Helpline() {
   );
 
   const renderEmergencyHelplines = () => (
-    <View style={styles.sectionCard}>
+    <View style={styles.sectionHeader}>
       <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
         {t('helpline.emergency_section_title')}
       </Text>
@@ -119,7 +119,7 @@ function Helpline() {
   );
 
   const renderOrganizations = () => (
-    <View style={styles.sectionCard}>
+    <View style={styles.sectionHeader}>
       <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
         {t('helpline.organizations_section_title')}
       </Text>
@@ -361,15 +361,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '700',
   },
-  sectionCard: {
+  sectionHeader: {
     marginHorizontal: Spacing.lg,
     marginTop: 22,
-    padding: 22,
-    borderRadius: 26,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#ECDDCB',
-    ...Shadows.small,
   },
   sectionTitle: {
     fontSize: 22,
@@ -378,6 +372,7 @@ const styles = StyleSheet.create({
     color: '#26140A',
   },
   cardStack: {
+    marginHorizontal: 2,
     marginTop: 16,
     gap: 12,
   },
