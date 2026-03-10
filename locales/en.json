@@ -126,6 +126,8 @@
   },
   "more": {
     "title": "Info and Settings",
+    "hero_subtitle": "Manage language, privacy, app details, and quick actions from one place.",
+    "notice": "Use this section to adjust the app, learn more about it, and share feedback.",
     "faqs": "FAQs",
     "faqs_subtitle": "Frequently asked questions",
     "faqs_banner": "Tap any question to read the answer.",
@@ -137,6 +139,9 @@
     "privacy_subtitle": "How we handle your data",
     "share": "Share App",
     "share_subtitle": "Spread the word",
+    "rate_us": "Rate Us",
+    "rate_us_subtitle": "Review the app on the Play Store",
+    "rate_us_error": "Could not open the rating page right now.",
     "share_message": "Check out Jagruk Mahila — an app for women's rights and legal awareness in India.",
     "back": "Back",
     "section_info": "INFORMATION",

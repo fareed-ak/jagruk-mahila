@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { I18nManager } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { changeLanguage } from '../app/_layout';
 
-const LANGUAGE_STORAGE_KEY = '@jagruk_mahila:language';
-
 const TopBar = ({ showLanguage = false }) => {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const languages = [
@@ -75,6 +71,7 @@ const TopBar = ({ showLanguage = false }) => {
             onPress={() => setDropdownVisible(false)}
           >
             <View style={styles.dropdown}>
+              <Text style={styles.dropdownTitle}>Language</Text>
               {languages.map((language) => (
                 <TouchableOpacity
                   key={language.code}
@@ -125,62 +122,74 @@ const styles = StyleSheet.create({
   languageSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: '#E8D5C4', // dusty parchment line
-    backgroundColor: '#FFFFFF',
-    gap: 6,
+    borderColor: '#DFC5AF',
+    backgroundColor: '#FFF7EF',
+    gap: 8,
   },
   languageText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#8C6B55', // warm brown-grey
     fontFamily: 'System',
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'rgba(34, 17, 8, 0.28)',
     justifyContent: 'flex-start',
     alignItems: 'flex-end',
-    paddingTop: 80, // Position below TopBar
+    paddingTop: 78,
     paddingRight: 16,
   },
   dropdown: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    backgroundColor: '#FFFDF9',
+    borderRadius: 22,
     borderWidth: 1,
-    borderColor: '#E8D5C4',
+    borderColor: '#E9DCCF',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
-    minWidth: 140,
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    elevation: 4,
+    minWidth: 180,
+    padding: 8,
+  },
+  dropdownTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    color: '#A65B3D',
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 10,
   },
   dropdownItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 13,
+    borderRadius: 16,
   },
   activeDropdownItem: {
-    backgroundColor: '#FDF6EE',
+    backgroundColor: '#FCF2E8',
   },
   dropdownItemText: {
     fontSize: 14,
-    color: '#1A0A00',
+    color: '#2A170D',
     fontFamily: 'System',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   activeDropdownItemText: {
     color: '#C0392B',
-    fontWeight: '600',
+    fontWeight: '700',
   },
 });
 

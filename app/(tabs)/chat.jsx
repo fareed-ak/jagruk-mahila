@@ -22,7 +22,6 @@ import {
   Colors,
   Typography,
   Spacing,
-  BorderRadius,
   Shadows,
 } from '../../styles/GlobalStyles';
 
@@ -64,7 +63,7 @@ DISCLAIMER: Always end with — "This is general legal information, not formal l
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 let _id = 0;
-const uid = () => String(++_id);
+const uid = () => `${Date.now()}-${++_id}-${Math.random().toString(36).slice(2, 8)}`;
 
 const PHONE_SPLIT = /\b(112|181|7827-170-170)\b/g;
 const PHONE_TEST = /^(112|181|7827-170-170)$/;
@@ -242,7 +241,7 @@ export default function Chat() {
           <FlatList
             ref={listRef}
             data={messages}
-            keyExtractor={(m) => m.id}
+            keyExtractor={(m, index) => `${m.id}-${index}`}
             renderItem={renderBubble}
             contentContainerStyle={styles.listContent}
             onContentSizeChange={() => listRef.current?.scrollToEnd({ animated: false })}
@@ -288,18 +287,25 @@ export default function Chat() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.background },
+  safe: { flex: 1, backgroundColor: '#F8EFE3' },
   flex: { flex: 1 },
 
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.md,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
+    borderRadius: 24,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.background,
+    borderBottomColor: '#EAD7C5',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    backgroundColor: '#FFF7EF',
+    ...Shadows.small,
   },
   rowReverse: { flexDirection: 'row-reverse' },
 
@@ -311,25 +317,28 @@ const styles = StyleSheet.create({
   },
   subheading: {
     fontSize: 12,
-    color: Colors.textSecondary,
-    marginTop: 2,
+    color: '#8B6A57',
+    marginTop: 4,
+    letterSpacing: 0.4,
   },
   clearBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderWidth: 1,
-    borderColor: Colors.primary,
-    borderRadius: BorderRadius.round,
+    borderColor: '#DFC5AF',
+    borderRadius: 16,
+    backgroundColor: '#FFFDF9',
   },
   clearText: { fontSize: 12, color: Colors.primary, fontWeight: '600' },
 
   listContent: {
-    padding: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
     gap: Spacing.md,
-    paddingBottom: Spacing.lg,
+    paddingBottom: Spacing.md,
   },
 
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm },
@@ -344,20 +353,20 @@ const styles = StyleSheet.create({
   },
   bubble: {
     maxWidth: '80%',
-    borderRadius: BorderRadius.lg,
+    borderRadius: 20,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     ...Shadows.small,
   },
   bubbleUser: {
     backgroundColor: Colors.primary,
-    borderBottomRightRadius: 4,
+    borderBottomRightRadius: 6,
   },
   bubbleBot: {
-    backgroundColor: Colors.surface,
-    borderBottomLeftRadius: 4,
+    backgroundColor: '#FFFDF9',
+    borderBottomLeftRadius: 6,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#E9DCCF',
   },
   bubbleText: { fontSize: 15, lineHeight: 22 },
   bubbleTextUser: { color: Colors.textLight },
@@ -372,7 +381,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
+    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.sm,
   },
   typingBubble: {
@@ -384,18 +393,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: Spacing.sm,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.lg,
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.lg,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 24,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
-    backgroundColor: Colors.background,
+    borderTopColor: '#EAD7C5',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    backgroundColor: '#FFF7EF',
+    ...Shadows.small,
   },
   input: {
     flex: 1,
-    backgroundColor: Colors.surface,
+    backgroundColor: '#FFFDF9',
     borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: BorderRadius.xl,
+    borderColor: '#DFC5AF',
+    borderRadius: 18,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     fontSize: 15,

@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Linking, I18nManager } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  I18nManager,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import TopBar from '../../components/TopBar';
 import { EMERGENCY_HELPLINES, ORGANIZATIONS } from '../../constants/helplineData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../../styles/GlobalStyles';
+import GlobalStyles, { Colors, Spacing, Shadows } from '../../styles/GlobalStyles';
 
 function Helpline() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const isRTL = I18nManager.isRTL;
   const [openOrg, setOpenOrg] = useState(null);
 
   const toggleOrg = (id) => {
-    setOpenOrg(prev => prev === id ? null : id);
+    setOpenOrg((prev) => (prev === id ? null : id));
   };
 
   const handleCall = (number) => {
@@ -37,164 +46,233 @@ function Helpline() {
   };
 
   const renderEmergencyBanner = () => (
-    <View style={styles.emergencyBanner}>
-      <Ionicons name="warning-outline" size={20} color="#FFFFFF" style={styles.bannerIcon} />
-      <Text style={styles.bannerText}>{t('helpline.emergency_banner')}</Text>
+    <View style={styles.noticeCard}>
+      <View style={styles.noticeIconWrap}>
+        <Ionicons name="warning-outline" size={18} color="#FFFFFF" />
+      </View>
+      <Text style={[styles.noticeText, isRTL && styles.textRTL]}>
+        {t('helpline.emergency_banner')}
+      </Text>
     </View>
   );
 
   const renderEmergencyHelplines = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{t('helpline.emergency_section_title')}</Text>
-      {EMERGENCY_HELPLINES.map((item) => (
-        <View 
-          key={item.id} 
-          style={[
-            styles.helplineCard,
-            item.isEmergency && styles.emergencyCard,
-            isRTL && styles.cardRTL
-          ]}
-        >
-          <View style={[styles.cardContent, isRTL && styles.cardContentRTL]}>
-            <View style={[styles.leftContent, isRTL && styles.leftContentRTL]}>
-              <View style={styles.helplineInfo}>
-                <Text style={[styles.helplineName, isRTL && styles.textRTL]}>
-                  {t(`helpline.numbers.${item.id}`)}
-                </Text>
-                <Text style={[styles.helplineNumber, item.isEmergency && styles.emergencyNumber, isRTL && styles.textRTL]}>
+    <View style={styles.sectionHeader}>
+      <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+        {t('helpline.emergency_section_title')}
+      </Text>
+
+      <View style={styles.cardStack}>
+        {EMERGENCY_HELPLINES.map((item) => (
+          <View
+            key={item.id}
+            style={[
+              styles.helplineCard,
+              item.isEmergency && styles.helplineCardEmergency,
+              isRTL && styles.helplineCardRTL,
+            ]}
+          >
+            <View style={[styles.helplineHeader, isRTL && styles.helplineHeaderRTL]}>
+              <View style={[styles.numberBadge, item.isEmergency && styles.numberBadgeEmergency]}>
+                <Ionicons
+                  name={item.isEmergency ? 'flash-outline' : 'call-outline'}
+                  size={16}
+                  color={item.isEmergency ? '#A63D1F' : Colors.primary}
+                />
+                <Text
+                  style={[
+                    styles.helplineNumber,
+                    item.isEmergency && styles.helplineNumberEmergency,
+                  ]}
+                >
                   {item.number}
                 </Text>
-                <Text style={[styles.purposeText, isRTL && styles.textRTL]}>
-                  {t(`helpline.purposes.${item.id}`)}
-                </Text>
-                <View style={[styles.availabilityBadge, isRTL && styles.availabilityBadgeRTL]}>
-                  <Text style={styles.availabilityText}>
-                    {t('helpline.available')}: {item.available}
-                  </Text>
-                </View>
               </View>
+
+              <TouchableOpacity
+                style={[styles.callButton, item.isEmergency && styles.callButtonEmergency]}
+                onPress={() => handleCall(item.number)}
+                activeOpacity={0.88}
+              >
+                <Ionicons name="call-outline" size={16} color="#FFFFFF" />
+                <Text style={styles.callButtonText}>{t('helpline.call')}</Text>
+              </TouchableOpacity>
             </View>
-            
-            <TouchableOpacity 
-              style={[styles.callButton, item.isEmergency && styles.emergencyButton]}
-              onPress={() => handleCall(item.number)}
-            >
-              <Ionicons name="call-outline" size={16} color="#FFFFFF" />
-              <Text style={styles.callButtonText}>{t('helpline.call')}</Text>
-            </TouchableOpacity>
+
+            <Text style={[styles.helplineName, isRTL && styles.textRTL]}>
+              {t(`helpline.numbers.${item.id}`)}
+            </Text>
+            <Text style={[styles.purposeText, isRTL && styles.textRTL]}>
+              {t(`helpline.purposes.${item.id}`)}
+            </Text>
+
+            <View style={[styles.metaRow, isRTL && styles.metaRowRTL]}>
+              <Ionicons name="time-outline" size={14} color="#8B6A57" />
+              <Text style={styles.metaText}>
+                {t('helpline.available')}: {item.available}
+              </Text>
+            </View>
           </View>
-        </View>
-      ))}
+        ))}
+      </View>
     </View>
   );
 
   const renderOrganizations = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{t('helpline.organizations_section_title')}</Text>
-      {ORGANIZATIONS.map((org) => (
-        <View key={org.id} style={styles.organizationCard}>
-          <TouchableOpacity 
-            style={[styles.orgHeader, isRTL && styles.orgHeaderRTL]}
-            onPress={() => toggleOrg(org.id)}
-          >
-            <Text style={[styles.orgName, isRTL && styles.textRTL]}>
-              {t(`helpline.${org.id}.name`)}
-            </Text>
-            <Ionicons 
-              name={openOrg === org.id ? "chevron-up-outline" : "chevron-down-outline"} 
-              size={20} 
-              color={Colors.primary} 
-            />
-          </TouchableOpacity>
-          
-          {openOrg === org.id && (
-            <View style={styles.orgContent}>
-              {/* Address */}
-              {org.address_key && (
-                <View style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
-                  <Ionicons name="location-outline" size={16} color={Colors.primary} style={styles.rowIcon} />
-                  <View style={styles.rowContent}>
-                    <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>{t('helpline.address')}</Text>
-                    <Text style={[styles.rowValue, isRTL && styles.textRTL]}>{t(org.address_key)}</Text>
-                  </View>
+    <View style={styles.sectionHeader}>
+      <Text style={[styles.sectionTitle, isRTL && styles.textRTL]}>
+        {t('helpline.organizations_section_title')}
+      </Text>
+
+      <View style={styles.cardStack}>
+        {ORGANIZATIONS.map((org) => (
+          <View key={org.id} style={styles.organizationCard}>
+            <TouchableOpacity
+              style={[styles.orgHeader, isRTL && styles.orgHeaderRTL]}
+              onPress={() => toggleOrg(org.id)}
+              activeOpacity={0.85}
+            >
+              <View style={styles.orgTitleWrap}>
+                <View style={styles.orgIconWrap}>
+                  <Ionicons name="business-outline" size={18} color={Colors.primary} />
                 </View>
-              )}
-              
-              {/* Description */}
-              {org.description_key && (
-                <View style={styles.contentRow}>
-                  <Text style={[styles.description, isRTL && styles.textRTL]}>{t(org.description_key)}</Text>
-                </View>
-              )}
-              
-              {/* Phone numbers */}
-              {org.phones.map((phone, index) => (
-                <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
-                  <Ionicons name="call-outline" size={16} color={Colors.primary} style={styles.rowIcon} />
-                  <View style={styles.rowContent}>
-                    <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>{t(phone.label_key)}</Text>
-                    <View style={[styles.numbersContainer, isRTL && styles.numbersContainerRTL]}>
-                      {phone.numbers.map((number, idx) => (
-                        <TouchableOpacity 
-                          key={idx}
-                          onPress={() => handleCall(number)}
-                          style={styles.numberButton}
-                        >
-                          <Text style={[styles.phoneNumber, isRTL && styles.textRTL]}>{number}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                    {phone.hours_key && (
-                      <Text style={[styles.hoursText, isRTL && styles.textRTL]}>
-                        {t('helpline.hours')}: {t(phone.hours_key)}
+                <Text style={[styles.orgName, isRTL && styles.textRTL]}>
+                  {t(`helpline.${org.id}.name`)}
+                </Text>
+              </View>
+              <Ionicons
+                name={openOrg === org.id ? 'chevron-up-outline' : 'chevron-down-outline'}
+                size={20}
+                color={Colors.primary}
+              />
+            </TouchableOpacity>
+
+            {openOrg === org.id && (
+              <View style={styles.orgContent}>
+                {org.address_key && (
+                  <View style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
+                    <Ionicons
+                      name="location-outline"
+                      size={16}
+                      color={Colors.primary}
+                      style={[styles.rowIcon, isRTL && styles.rowIconRTL]}
+                    />
+                    <View style={styles.rowContent}>
+                      <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>
+                        {t('helpline.address')}
                       </Text>
-                    )}
+                      <Text style={[styles.rowValue, isRTL && styles.textRTL]}>
+                        {t(org.address_key)}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-              ))}
-              
-              {/* Emails */}
-              {org.emails.map((email, index) => (
-                <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
-                  <Ionicons name="mail-outline" size={16} color={Colors.primary} style={styles.rowIcon} />
-                  <View style={styles.rowContent}>
-                    <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>{t(email.label_key)}</Text>
-                    <TouchableOpacity onPress={() => handleEmail(email.address)}>
-                      <Text style={[styles.emailAddress, isRTL && styles.textRTL]}>{email.address}</Text>
-                    </TouchableOpacity>
+                )}
+
+                {org.description_key && (
+                  <View style={styles.descriptionWrap}>
+                    <Text style={[styles.description, isRTL && styles.textRTL]}>
+                      {t(org.description_key)}
+                    </Text>
                   </View>
-                </View>
-              ))}
-              
-              {/* Links */}
-              {org.links.map((link, index) => (
-                <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
-                  <Ionicons name="globe-outline" size={16} color={Colors.primary} style={styles.rowIcon} />
-                  <View style={styles.rowContent}>
-                    <TouchableOpacity onPress={() => handleLink(link.url)}>
-                      <Text style={[styles.linkText, isRTL && styles.textRTL]}>{t(link.label_key)}</Text>
-                    </TouchableOpacity>
+                )}
+
+                {org.phones.map((phone, index) => (
+                  <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
+                    <Ionicons
+                      name="call-outline"
+                      size={16}
+                      color={Colors.primary}
+                      style={[styles.rowIcon, isRTL && styles.rowIconRTL]}
+                    />
+                    <View style={styles.rowContent}>
+                      <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>
+                        {t(phone.label_key)}
+                      </Text>
+                      <View style={[styles.numbersContainer, isRTL && styles.numbersContainerRTL]}>
+                        {phone.numbers.map((number, idx) => (
+                          <TouchableOpacity
+                            key={idx}
+                            onPress={() => handleCall(number)}
+                            style={styles.numberChip}
+                            activeOpacity={0.82}
+                          >
+                            <Text style={[styles.phoneNumber, isRTL && styles.textRTL]}>
+                              {number}
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                      {phone.hours_key && (
+                        <Text style={[styles.hoursText, isRTL && styles.textRTL]}>
+                          {t('helpline.hours')}: {t(phone.hours_key)}
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-      ))}
+                ))}
+
+                {org.emails.map((email, index) => (
+                  <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
+                    <Ionicons
+                      name="mail-outline"
+                      size={16}
+                      color={Colors.primary}
+                      style={[styles.rowIcon, isRTL && styles.rowIconRTL]}
+                    />
+                    <View style={styles.rowContent}>
+                      <Text style={[styles.rowLabel, isRTL && styles.textRTL]}>
+                        {t(email.label_key)}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleEmail(email.address)}>
+                        <Text style={[styles.emailAddress, isRTL && styles.textRTL]}>
+                          {email.address}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+
+                {org.links.map((link, index) => (
+                  <View key={index} style={[styles.contentRow, isRTL && styles.contentRowRTL]}>
+                    <Ionicons
+                      name="globe-outline"
+                      size={16}
+                      color={Colors.primary}
+                      style={[styles.rowIcon, isRTL && styles.rowIconRTL]}
+                    />
+                    <View style={styles.rowContent}>
+                      <TouchableOpacity onPress={() => handleLink(link.url)}>
+                        <Text style={[styles.linkText, isRTL && styles.textRTL]}>
+                          {t(link.label_key)}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </View>
+        ))}
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="dark" backgroundColor={Colors.background} />
-      <TopBar />
-      
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.topBarWrap}>
+          <TopBar />
+        </View>
+
         {renderEmergencyBanner()}
         {renderEmergencyHelplines()}
         {renderOrganizations()}
-        
-        <View style={styles.bottomSpacing} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -203,224 +281,280 @@ function Helpline() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: '#F8EFE3',
   },
-  emergencyBanner: {
+  content: {
+    paddingBottom: Spacing.xl,
+  },
+  topBarWrap: {
+    paddingTop: 6,
+    paddingBottom: 4,
+    backgroundColor: '#F8EFE3',
+  },
+  noticeCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.lg,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderRadius: 22,
     backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12,
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  noticeIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
   },
-  bannerIcon: {
-    marginRight: 8,
-  },
-  bannerText: {
+  noticeText: {
+    flex: 1,
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
+    lineHeight: 20,
+    fontWeight: '700',
   },
-  section: {
-    padding: 20,
+  sectionHeader: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.text,
-    marginBottom: 16,
+    fontSize: 22,
+    lineHeight: 28,
+    fontWeight: '800',
+    color: '#26140A',
+  },
+  cardStack: {
+    marginHorizontal: 2,
+    marginTop: 16,
+    gap: 12,
   },
   helplineCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: BorderRadius.medium,
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.secondary,
-    marginBottom: 12,
+    borderRadius: 22,
+    padding: 18,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
     ...Shadows.small,
   },
-  emergencyCard: {
-    borderLeftColor: Colors.primary,
+  helplineCardEmergency: {
+    backgroundColor: '#FFF6EF',
+    borderColor: '#E9C7AE',
   },
-  cardRTL: {
-    borderRightWidth: 4,
-    borderLeftWidth: 0,
-    borderRightColor: Colors.secondary,
+  helplineCardRTL: {
+    alignItems: 'stretch',
   },
-  cardContent: {
+  helplineHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    gap: 12,
   },
-  cardContentRTL: {
+  helplineHeaderRTL: {
     flexDirection: 'row-reverse',
   },
-  leftContent: {
+  numberBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    gap: 8,
+    borderRadius: 16,
+    backgroundColor: '#FBE9DC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
-  leftContentRTL: {
-    flexDirection: 'row-reverse',
-  },
-  helplineInfo: {
-    flex: 1,
-  },
-  helplineName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: 4,
+  numberBadgeEmergency: {
+    backgroundColor: '#FBDCC8',
   },
   helplineNumber: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: Colors.secondary,
-    marginBottom: 8,
-  },
-  emergencyNumber: {
+    fontWeight: '800',
     color: Colors.primary,
   },
+  helplineNumberEmergency: {
+    color: '#9E3D20',
+  },
+  helplineName: {
+    marginTop: 14,
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: '#2A170D',
+  },
   purposeText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    lineHeight: 18,
-    marginBottom: 8,
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#6E5443',
   },
-  availabilityBadge: {
-    alignSelf: 'flex-start',
-  },
-  availabilityBadgeRTL: {
-    alignSelf: 'flex-end',
-  },
-  availabilityText: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-    backgroundColor: Colors.backgroundSecondary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  callButton: {
-    backgroundColor: Colors.secondary,
+  metaRow: {
+    marginTop: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    minHeight: 44,
+    gap: 6,
   },
-  emergencyButton: {
+  metaRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  metaText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8B6A57',
+  },
+  callButton: {
+    minHeight: 46,
+    borderRadius: 16,
+    backgroundColor: '#B54B28',
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    ...Shadows.small,
+  },
+  callButtonEmergency: {
     backgroundColor: Colors.primary,
   },
   callButtonText: {
     color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
+    fontWeight: '700',
   },
   organizationCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: BorderRadius.medium,
-    marginBottom: 12,
+    borderRadius: 22,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
+    overflow: 'hidden',
     ...Shadows.small,
   },
   orgHeader: {
+    minHeight: 64,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    minHeight: 44,
+    gap: 12,
   },
   orgHeaderRTL: {
     flexDirection: 'row-reverse',
   },
-  orgName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.text,
+  orgTitleWrap: {
     flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  orgIconWrap: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FBE9DC',
+  },
+  orgName: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: '700',
+    color: '#2A170D',
   },
   orgContent: {
-    padding: 16,
+    padding: 18,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: Colors.backgroundSecondary,
+    borderTopColor: '#F0E4D8',
   },
   contentRow: {
     flexDirection: 'row',
-    marginBottom: 12,
-    minHeight: 44,
     alignItems: 'flex-start',
+    marginTop: 16,
   },
   contentRowRTL: {
     flexDirection: 'row-reverse',
   },
   rowIcon: {
-    marginRight: 8,
-    marginTop: 2,
+    marginRight: 10,
+    marginTop: 3,
+  },
+  rowIconRTL: {
+    marginRight: 0,
+    marginLeft: 10,
   },
   rowContent: {
     flex: 1,
   },
   rowLabel: {
     fontSize: 14,
-    fontWeight: '600',
-    color: Colors.text,
-    marginBottom: 4,
+    lineHeight: 20,
+    fontWeight: '700',
+    color: '#3C2417',
+    marginBottom: 6,
   },
   rowValue: {
     fontSize: 14,
-    color: Colors.textSecondary,
-    lineHeight: 20,
+    lineHeight: 21,
+    color: '#6E5443',
+  },
+  descriptionWrap: {
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 16,
+    backgroundColor: '#FCF2E8',
   },
   description: {
     fontSize: 14,
-    color: Colors.textSecondary,
-    fontStyle: 'italic',
-    lineHeight: 20,
+    lineHeight: 21,
+    color: '#6E5443',
   },
   numbersContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 4,
   },
   numbersContainerRTL: {
     flexDirection: 'row-reverse',
   },
-  numberButton: {
-    minHeight: 44,
+  numberChip: {
+    minHeight: 40,
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    backgroundColor: '#FBE9DC',
     justifyContent: 'center',
   },
   phoneNumber: {
     fontSize: 14,
+    fontWeight: '700',
     color: Colors.primary,
-    fontWeight: '600',
   },
   hoursText: {
+    marginTop: 8,
     fontSize: 12,
-    color: Colors.textSecondary,
-    fontStyle: 'italic',
+    lineHeight: 18,
+    color: '#8B6A57',
   },
   emailAddress: {
     fontSize: 14,
+    lineHeight: 20,
     color: Colors.primary,
     textDecorationLine: 'underline',
   },
   linkText: {
     fontSize: 14,
+    lineHeight: 20,
     color: Colors.primary,
     textDecorationLine: 'underline',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   textRTL: {
     textAlign: 'right',
-  },
-  bottomSpacing: {
-    height: 24,
   },
 });
 
