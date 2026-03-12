@@ -40,26 +40,26 @@ export default function Privacy() {
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar style="dark" backgroundColor={Colors.background} />
 
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.82}
+        >
+          <Ionicons
+            name={isRTL ? 'arrow-forward' : 'arrow-back'}
+            size={20}
+            color={Colors.backButtonIcon}
+          />
+        </TouchableOpacity>
+        <View style={styles.headerSpacer} />
+      </View>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => router.back()}
-            activeOpacity={0.82}
-          >
-            <Ionicons
-              name={isRTL ? 'arrow-forward' : 'arrow-back'}
-              size={20}
-              color={Colors.backButtonIcon}
-            />
-          </TouchableOpacity>
-          <View style={styles.headerSpacer} />
-        </View>
-
         <View style={styles.heroCard}>
           <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
             {t('more.privacy')}
