@@ -19,9 +19,45 @@ export const aboutContent = {
   version: '1.0.0',
 };
 
+export const aboutTeam = {
+  mentor: {
+    en: 'Dr. Kumud Kundu',
+    hi: 'डॉ. कुमुद कुंडू',
+    ur: 'ڈاکٹر کمود کندو',
+  },
+  members: [
+    {
+      name: {
+        en: 'Fareed Akhtar',
+        hi: 'फरीद अख्तर',
+        ur: 'فرید اختر',
+      },
+      role: 'lead',
+    },
+    {
+      name: {
+        en: 'Tushar Yadav',
+        hi: 'तुषार यादव',
+        ur: 'تشار یادو',
+      },
+    },
+    {
+      name: {
+        en: 'Nikhil Singh',
+        hi: 'निखिल सिंह',
+        ur: 'نکھل سنگھ',
+      },
+    },
+  ],
+};
+
 export const aboutLabels = {
   mission_heading: { en: 'Our Mission', hi: 'हमारा उद्देश्य', ur: 'ہمارا مشن' },
   what_we_offer_heading: { en: 'What We Offer', hi: 'हम क्या प्रदान करते हैं', ur: 'ہم کیا پیش کرتے ہیں' },
   disclaimer_heading: { en: 'Disclaimer', hi: 'अस्वीकरण', ur: 'دستبرداری' },
+  team_heading: { en: 'Team', hi: 'टीम', ur: 'ٹیم' },
+  mentor_label: { en: 'Mentor', hi: 'मार्गदर्शक', ur: 'مینٹور' },
+  core_team_label: { en: 'Core Team', hi: 'मुख्य टीम', ur: 'بنیادی ٹیم' },
+  lead_label: { en: 'Lead', hi: 'लीड', ur: 'لیڈ' },
   version_label: { en: 'Version', hi: 'संस्करण', ur: 'ورژن' },
 };

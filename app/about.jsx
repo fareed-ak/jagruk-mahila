@@ -12,143 +12,270 @@ import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { aboutContent, aboutLabels } from '../constants/aboutData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
+import { aboutContent, aboutLabels, aboutTeam } from '../constants/aboutData';
+import GlobalStyles, { Colors, Spacing, Shadows } from '../styles/GlobalStyles';
 
 export default function About() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
   const currentLang = i18n.language || 'en';
 
-  const renderSection = (sectionKey, content, labelKey, isDisclaimer = false) => {
-    const heading = aboutLabels[labelKey][currentLang] || aboutLabels[labelKey].en;
-    const body = content[currentLang] || content.en;
+  const getLabel = (key) => aboutLabels[key][currentLang] || aboutLabels[key].en;
+  const getBody = (content) => content[currentLang] || content.en;
 
-    return (
-      <View key={sectionKey} style={[styles.sectionCard, isDisclaimer && styles.disclaimerCard]}>
-        <Text style={[styles.sectionHeading, isRTL && styles.textRTL]}>
-          {heading}
-        </Text>
-        <Text style={[styles.sectionBody, isRTL && styles.textRTL]}>
-          {body}
-        </Text>
-      </View>
-    );
-  };
+  const renderSection = (sectionKey, content, labelKey, isDisclaimer = false) => (
+    <View key={sectionKey} style={[styles.sectionCard, isDisclaimer && styles.disclaimerCard]}>
+      <Text style={[styles.sectionHeading, isRTL && styles.textRTL]}>
+        {getLabel(labelKey)}
+      </Text>
+      <Text style={[styles.sectionBody, isRTL && styles.textRTL]}>
+        {getBody(content)}
+      </Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <StatusBar style="light" backgroundColor={Colors.primary} />
-      
-      {/* Hero Band */}
-      <View style={styles.heroBand}>
-        <TouchableOpacity 
-          style={GlobalStyles.backButton} 
-          onPress={() => router.back()}
-        >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={20} 
-            color={Colors.backButtonIcon} 
-          />
-        </TouchableOpacity>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <Text style={styles.heroTitle}>Jagruk Mahila</Text>
-          <Text style={styles.heroVersion}>Version {aboutContent.version}</Text>
-        </View>
-        <View style={styles.backButtonSpacer} />
-      </View>
+      <StatusBar style="dark" backgroundColor={Colors.background} />
 
-      {/* Content */}
       <ScrollView
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {renderSection('mission', aboutContent.mission, 'mission_heading')}
-        {renderSection('what_we_offer', aboutContent.what_we_offer, 'what_we_offer_heading')}
-        {renderSection('disclaimer', aboutContent.disclaimer, 'disclaimer_heading', true)}
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.82}
+          >
+            <Ionicons
+              name={isRTL ? 'arrow-forward' : 'arrow-back'}
+              size={20}
+              color={Colors.backButtonIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <View style={styles.heroCard}>
+          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
+            Jagruk Mahila
+          </Text>
+          <Text style={[styles.heroSubtitle, isRTL && styles.textRTL]}>
+            {getLabel('version_label')} {aboutContent.version}
+          </Text>
+        </View>
+
+        <View style={styles.sectionWrap}>
+          {renderSection('mission', aboutContent.mission, 'mission_heading')}
+          {renderSection('what_we_offer', aboutContent.what_we_offer, 'what_we_offer_heading')}
+
+          <View style={styles.sectionCard}>
+            <Text style={[styles.sectionHeading, isRTL && styles.textRTL]}>
+              {getLabel('team_heading')}
+            </Text>
+
+            <View style={styles.teamBlock}>
+              <Text style={[styles.teamLabel, isRTL && styles.textRTL]}>
+                {getLabel('mentor_label')}
+              </Text>
+              <Text style={[styles.teamName, isRTL && styles.textRTL]}>
+                {aboutTeam.mentor[currentLang] || aboutTeam.mentor.en}
+              </Text>
+            </View>
+
+            <View style={styles.teamDivider} />
+
+            <View style={styles.teamBlock}>
+              <Text style={[styles.teamLabel, isRTL && styles.textRTL]}>
+                {getLabel('core_team_label')}
+              </Text>
+
+              <View style={styles.memberStack}>
+                {aboutTeam.members.map((member) => (
+                  <View
+                    key={member.name.en}
+                    style={[styles.memberRow, isRTL && styles.memberRowRTL]}
+                  >
+                    <View style={styles.memberDot} />
+                    <View style={styles.memberTextWrap}>
+                      <View style={[styles.memberNameRow, isRTL && styles.memberNameRowRTL]}>
+                        <Text style={[styles.teamName, isRTL && styles.textRTL]}>
+                          {member.name[currentLang] || member.name.en}
+                        </Text>
+                        {member.role === 'lead' && (
+                          <View style={styles.roleBadge}>
+                            <Text style={styles.roleBadgeText}>
+                              {getLabel('lead_label')}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+
+          {renderSection('disclaimer', aboutContent.disclaimer, 'disclaimer_heading', true)}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // Hero Band Styles
-  heroBand: {
-    backgroundColor: '#C0392B',
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#F8EFE3',
+  },
+  content: {
+    paddingBottom: Spacing.xl,
+  },
+  headerRow: {
+    paddingTop: 8,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
+    justifyContent: 'space-between',
+    backgroundColor: '#F8EFE3',
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#DFC5AF',
     alignItems: 'center',
     justifyContent: 'center',
+    ...Shadows.small,
   },
-  backArrow: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
+  headerSpacer: {
+    width: 42,
   },
-  backButtonSpacer: {
-    width: 36,
+  heroCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.sm,
+    paddingHorizontal: 22,
+    paddingVertical: 24,
+    borderRadius: 28,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    ...Shadows.small,
   },
   heroTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800',
+    color: '#26140A',
   },
-  heroVersion: {
-    color: '#FFFFFF',
-    opacity: 0.8,
-    fontSize: 12,
-    marginTop: 2,
+  heroSubtitle: {
+    marginTop: 10,
+    fontSize: 15,
+    lineHeight: 23,
+    color: '#6E5443',
   },
-
-  // Scroll Container Styles
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
+  sectionWrap: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
+    gap: 14,
   },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-
-  // Content Styles
   sectionCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFDF9',
+    borderRadius: 22,
     padding: 20,
-    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
     ...Shadows.small,
   },
   disclaimerCard: {
     backgroundColor: '#FFF8F0',
-    borderLeftWidth: 3,
-    borderLeftColor: '#F5A623',
+    borderColor: '#E8D6C0',
   },
   sectionHeading: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.primary,
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.7,
   },
   sectionBody: {
     fontSize: 15,
     color: '#4A3728',
     lineHeight: 24,
   },
-
-  // RTL Text Styles
+  teamBlock: {
+    marginTop: 2,
+  },
+  teamLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#8B6A57',
+    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  teamName: {
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: '#26140A',
+  },
+  teamDivider: {
+    height: 1,
+    backgroundColor: '#F0E4D8',
+    marginVertical: 16,
+  },
+  memberStack: {
+    gap: 12,
+  },
+  memberRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  memberRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  memberDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#C76A3D',
+    marginTop: 7,
+    marginHorizontal: 2,
+  },
+  memberTextWrap: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  memberNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  memberNameRowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  roleBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: '#FBE9DC',
+  },
+  roleBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#A04421',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
   textRTL: {
     textAlign: 'right',
   },

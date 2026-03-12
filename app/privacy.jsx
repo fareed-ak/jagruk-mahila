@@ -13,14 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { privacyContent } from '../constants/privacyData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
+import GlobalStyles, { Colors, Spacing, Shadows } from '../styles/GlobalStyles';
 
 export default function Privacy() {
   const { t, i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
   const currentLang = i18n.language || 'en';
 
-  const renderSection = (item, index) => {
+  const renderSection = (item) => {
     const heading = item.heading[currentLang] || item.heading.en;
     const body = item.body[currentLang] || item.body.en;
 
@@ -38,116 +38,126 @@ export default function Privacy() {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <StatusBar style="light" backgroundColor={Colors.primary} />
-      
-      {/* Hero Band */}
-      <View style={styles.heroBand}>
-        <TouchableOpacity 
-          style={GlobalStyles.backButton} 
-          onPress={() => router.back()}
-        >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={20} 
-            color={Colors.backButtonIcon} 
-          />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>{t('more.privacy')}</Text>
-        <View style={styles.backButtonSpacer} />
-      </View>
+      <StatusBar style="dark" backgroundColor={Colors.background} />
 
-      {/* Content */}
       <ScrollView
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {privacyContent.map((item, index) => renderSection(item, index))}
-        
-        {/* Last Updated Note */}
-        <Text style={[styles.lastUpdatedText, isRTL && styles.textRTL]}>
-          Last updated: March 2026
-        </Text>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.82}
+          >
+            <Ionicons
+              name={isRTL ? 'arrow-forward' : 'arrow-back'}
+              size={20}
+              color={Colors.backButtonIcon}
+            />
+          </TouchableOpacity>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <View style={styles.heroCard}>
+          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
+            {t('more.privacy')}
+          </Text>
+        </View>
+
+        <View style={styles.sectionWrap}>
+          {privacyContent.map(renderSection)}
+
+          <Text style={[styles.lastUpdatedText, isRTL && styles.textRTL]}>
+            Last updated: March 2026
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // Hero Band Styles
-  heroBand: {
-    backgroundColor: '#C0392B',
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#F8EFE3',
+  },
+  content: {
+    paddingBottom: Spacing.xl,
+  },
+  headerRow: {
+    paddingTop: 8,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
+    justifyContent: 'space-between',
+    backgroundColor: '#F8EFE3',
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#DFC5AF',
     alignItems: 'center',
     justifyContent: 'center',
+    ...Shadows.small,
   },
-  backArrow: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
+  headerSpacer: {
+    width: 42,
   },
-  backButtonSpacer: {
-    width: 36,
+  heroCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.sm,
+    paddingHorizontal: 22,
+    paddingVertical: 24,
+    borderRadius: 28,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    ...Shadows.small,
   },
   heroTitle: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800',
+    color: '#26140A',
   },
-
-  // Scroll Container Styles
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
+  sectionWrap: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
+    gap: 14,
   },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-
-  // Content Styles
   sectionCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
+    backgroundColor: '#FFFDF9',
+    borderRadius: 22,
     padding: 20,
-    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
     ...Shadows.small,
   },
   sectionHeading: {
     fontSize: 14,
-    fontWeight: '700',
-    color: '#C0392B',
+    fontWeight: '800',
+    color: Colors.primary,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 8,
+    letterSpacing: 0.7,
+    marginBottom: 10,
   },
   sectionBody: {
     fontSize: 14,
     color: '#4A3728',
     lineHeight: 22,
   },
-
-  // Last Updated Styles
   lastUpdatedText: {
     fontSize: 12,
     color: '#8C6B55',
     textAlign: 'center',
-    paddingVertical: 24,
-    marginTop: Spacing.medium,
+    paddingVertical: 18,
   },
-
-  // RTL Text Styles
   textRTL: {
     textAlign: 'right',
   },
