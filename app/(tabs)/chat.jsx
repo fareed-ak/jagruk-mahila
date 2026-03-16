@@ -27,7 +27,7 @@ import {
 
 // ── Gemini ────────────────────────────────────────────────────────────────────
 
-const GEMINI_API_KEY = 'it ain\'t here lil bro';
+const GEMINI_API_KEY = 'AIzaSyCIl_dBfKcDz5SkwyoERznVopDJ_t_xWBM';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
 const SYSTEM_PROMPT = `You are "NCW Sahayata Bot," a compassionate and knowledgeable assistant for the National Commission for Women (NCW), India.
@@ -45,8 +45,8 @@ LEGAL EXPERTISE:
 "Please call 112 (Emergency) or 181 (Women's Helpline) immediately."
 
 RESPONSE FORMAT:
-1. Keep the full reply short, usually 2 to 4 short sentences
-2. Give a direct answer in plain text
+1. Keep the full reply short but enough explanatory to be helpful. Use simple language.
+2. Give a direct answer in plain text and reply in whatever language the user uses (Hindi, Urdu, English, Hinglish etc.).
 3. Mention only the most important right or next step
 4. Include helpline numbers only when relevant
 
@@ -212,15 +212,18 @@ export default function Chat() {
       <StatusBar style="dark" backgroundColor={Colors.background} />
 
       {/* Header */}
-      <View style={[styles.header, isRTL && styles.rowReverse]}>
-        <View>
-          <Text style={[styles.appName, isRTL && styles.rtl]}>{appName}</Text>
-          <Text style={[styles.subheading, isRTL && styles.rtl]}>{subheading}</Text>
+      <View style={styles.headerWrap}>
+        <View style={[styles.header, isRTL && styles.rowReverse]}>
+          <View>
+            <Text style={[styles.appName, isRTL && styles.rtl]}>{appName}</Text>
+            <Text style={[styles.subheading, isRTL && styles.rtl]}>{subheading}</Text>
+          </View>
+          <TouchableOpacity style={styles.clearBtn} onPress={handleClear} activeOpacity={0.75}>
+            <Ionicons name="trash-outline" size={15} color={Colors.primary} />
+            <Text style={styles.clearText}>{clearLabel}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.clearBtn} onPress={handleClear} activeOpacity={0.75}>
-          <Ionicons name="trash-outline" size={15} color={Colors.primary} />
-          <Text style={styles.clearText}>{clearLabel}</Text>
-        </TouchableOpacity>
+        <View style={styles.headerDivider} />
       </View>
 
       {/*
@@ -290,22 +293,20 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F8EFE3' },
   flex: { flex: 1 },
 
+  headerWrap: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-    borderRadius: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EAD7C5',
-    borderWidth: 1,
-    borderColor: '#EAD7C5',
-    backgroundColor: '#FFF7EF',
-    ...Shadows.small,
+    paddingBottom: Spacing.md,
+  },
+  headerDivider: {
+    height: 1,
+    backgroundColor: '#E0CCB7',
+    marginBottom: Spacing.sm,
   },
   rowReverse: { flexDirection: 'row-reverse' },
 
