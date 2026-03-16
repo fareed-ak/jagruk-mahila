@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { faqs } from '../constants/faqData';
-import GlobalStyles, { Colors, Typography, Spacing, BorderRadius, Shadows } from '../styles/GlobalStyles';
+import GlobalStyles, { Colors, Spacing, Shadows } from '../styles/GlobalStyles';
 
 export default function FAQ() {
   const { t, i18n } = useTranslation();
@@ -22,7 +22,7 @@ export default function FAQ() {
   const currentLang = i18n.language || 'en';
 
   const toggleFaq = (id) => {
-    setOpenFaqId(prev => prev === id ? null : id);
+    setOpenFaqId((prev) => (prev === id ? null : id));
   };
 
   const renderFaqItem = (faq) => {
@@ -35,28 +35,28 @@ export default function FAQ() {
         <TouchableOpacity
           style={[styles.faqHeader, isRTL && styles.faqHeaderRTL]}
           onPress={() => toggleFaq(faq.id)}
-          activeOpacity={0.7}
+          activeOpacity={0.82}
         >
-          <Text style={[styles.questionText, isRTL && styles.textRTL]}>
-            {question}
-          </Text>
-          <Ionicons
-            name={isOpen ? 'chevron-up-outline' : 'chevron-down-outline'}
-            size={18}
-            color={Colors.primary}
-            style={[styles.chevronIcon, isRTL && styles.chevronIconRTL]}
-          />
+          <View style={styles.questionWrap}>
+            <Text style={[styles.questionText, isRTL && styles.textRTL]}>
+              {question}
+            </Text>
+          </View>
+          <View style={styles.chevronWrap}>
+            <Ionicons
+              name={isOpen ? 'chevron-up-outline' : 'chevron-down-outline'}
+              size={20}
+              color={Colors.primary}
+            />
+          </View>
         </TouchableOpacity>
-        
+
         {isOpen && (
-          <>
-            <View style={styles.dividerLine} />
-            <View style={styles.answerContainer}>
-              <Text style={[styles.answerText, isRTL && styles.textRTL]}>
-                {answer}
-              </Text>
-            </View>
-          </>
+          <View style={styles.answerContainer}>
+            <Text style={[styles.answerText, isRTL && styles.textRTL]}>
+              {answer}
+            </Text>
+          </View>
         )}
       </View>
     );
@@ -64,170 +64,152 @@ export default function FAQ() {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      <StatusBar style="light" backgroundColor={Colors.primary} />
-      
-      {/* Hero Band */}
-      <View style={styles.heroBand}>
-        <TouchableOpacity 
-          style={GlobalStyles.backButton} 
+      <StatusBar style="dark" backgroundColor={Colors.background} />
+
+      <View style={styles.headerRow}>
+        <TouchableOpacity
+          style={styles.backButton}
           onPress={() => router.back()}
+          activeOpacity={0.82}
         >
-          <Ionicons 
-            name={isRTL ? "arrow-forward" : "arrow-back"} 
-            size={20} 
-            color={Colors.backButtonIcon} 
+          <Ionicons
+            name={isRTL ? 'arrow-forward' : 'arrow-back'}
+            size={20}
+            color={Colors.backButtonIcon}
           />
         </TouchableOpacity>
-        <Text style={styles.heroTitle}>{t('more.faqs')}</Text>
-        <View style={styles.backButtonSpacer} />
+        <View style={styles.headerSpacer} />
       </View>
 
-      {/* Info Banner */}
-      <View style={[styles.infoBanner, isRTL && styles.infoBannerRTL]}>
-        <View style={styles.bannerBorder} />
-        <Text style={[styles.bannerText, isRTL && styles.textRTL]}>
-          {t('more.faqs_banner')}
-        </Text>
-      </View>
-
-      {/* FAQ List */}
       <ScrollView
-        style={styles.scrollContainer}
-        contentContainerStyle={styles.scrollContent}
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {faqs.map(renderFaqItem)}
+        <View style={styles.heroCard}>
+          <Text style={[styles.heroTitle, isRTL && styles.textRTL]}>
+            {t('more.faqs')}
+          </Text>
+          <Text style={[styles.heroSubtitle, isRTL && styles.textRTL]}>
+            {t('more.faqs_banner')}
+          </Text>
+        </View>
+
+        <View style={styles.sectionWrap}>
+          {faqs.map(renderFaqItem)}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-
-  // Hero Band Styles
-  heroBand: {
-    backgroundColor: '#C0392B',
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#F8EFE3',
+  },
+  content: {
+    paddingBottom: Spacing.xl,
+  },
+  headerRow: {
+    paddingTop: 8,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 18,
+    justifyContent: 'space-between',
+    backgroundColor: '#F8EFE3',
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#DFC5AF',
     alignItems: 'center',
     justifyContent: 'center',
+    ...Shadows.small,
   },
-  backArrow: {
-    color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: 'bold',
+  headerSpacer: {
+    width: 42,
   },
-  backButtonSpacer: {
-    width: 36,
+  heroCard: {
+    marginHorizontal: Spacing.lg,
+    marginTop: Spacing.sm,
+    paddingHorizontal: 22,
+    paddingVertical: 24,
+    borderRadius: 28,
+    backgroundColor: '#FFF7EF',
+    borderWidth: 1,
+    borderColor: '#EAD7C5',
+    ...Shadows.small,
   },
   heroTitle: {
-    flex: 1,
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800',
+    color: '#26140A',
   },
-
-  // Info Banner Styles
-  infoBanner: {
-    backgroundColor: '#FDF6EE',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginHorizontal: Spacing.large,
-    marginTop: Spacing.medium,
-    borderRadius: BorderRadius.small,
-    flexDirection: 'row',
-    alignItems: 'center',
+  heroSubtitle: {
+    marginTop: 10,
+    fontSize: 15,
+    lineHeight: 23,
+    color: '#6E5443',
   },
-  infoBannerRTL: {
-    flexDirection: 'row-reverse',
+  sectionWrap: {
+    marginHorizontal: Spacing.lg,
+    marginTop: 22,
+    gap: 12,
   },
-  bannerBorder: {
-    width: 4,
-    height: '100%',
-    backgroundColor: '#F5A623',
-    marginRight: Spacing.medium,
-    borderRadius: 2,
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-  },
-  bannerText: {
-    fontSize: Typography.bodySmall,
-    color: '#8C6B55',
-    marginLeft: 16,
-    flex: 1,
-  },
-
-  // Scroll Container Styles
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-
-  // FAQ Styles
   faqCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: 12,
-    marginBottom: 10,
+    borderRadius: 22,
+    backgroundColor: '#FFFDF9',
+    borderWidth: 1,
+    borderColor: '#E9DCCF',
     overflow: 'hidden',
     ...Shadows.small,
   },
   faqHeader: {
+    minHeight: 72,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 60,
-    paddingVertical: 16,
-    paddingHorizontal: 18,
+    gap: 12,
   },
   faqHeaderRTL: {
     flexDirection: 'row-reverse',
   },
+  questionWrap: {
+    flex: 1,
+  },
   questionText: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#1A0A00',
-    flex: 1,
-    paddingRight: 12,
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: '700',
+    color: '#2A170D',
   },
-  chevronIcon: {
-    marginLeft: Spacing.small,
-  },
-  chevronIconRTL: {
-    marginLeft: 0,
-    marginRight: Spacing.small,
-  },
-  dividerLine: {
-    height: 1,
-    backgroundColor: '#F0E8E0',
-    marginHorizontal: 18,
+  chevronWrap: {
+    width: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   answerContainer: {
-    backgroundColor: '#FAFAFA',
     paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingTop: 0,
+    paddingBottom: 18,
+    borderTopWidth: 1,
+    borderTopColor: '#F0E4D8',
+    backgroundColor: '#FCF7F1',
   },
   answerText: {
+    marginTop: 16,
     fontSize: 14,
-    color: '#4A3728',
     lineHeight: 22,
+    color: '#5E483B',
   },
-
-  // RTL Text Styles
   textRTL: {
     textAlign: 'right',
   },

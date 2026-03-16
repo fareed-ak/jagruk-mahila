@@ -4,7 +4,9 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Linking,
+  Modal,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -27,8 +29,9 @@ import {
 
 // ── Gemini ────────────────────────────────────────────────────────────────────
 
-const GEMINI_API_KEY = 'it ain\'t here lil bro';
+const GEMINI_API_KEY = '';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+const REPORT_URL = '';
 
 const SYSTEM_PROMPT = `You are "NCW Sahayata Bot," a compassionate and knowledgeable assistant for the National Commission for Women (NCW), India.
 
@@ -45,8 +48,8 @@ LEGAL EXPERTISE:
 "Please call 112 (Emergency) or 181 (Women's Helpline) immediately."
 
 RESPONSE FORMAT:
-1. Keep the full reply short, usually 2 to 4 short sentences
-2. Give a direct answer in plain text
+1. Keep the full reply short but enough explanatory to be helpful. Use simple language.
+2. Give a direct answer in plain text and reply in whatever language the user uses (Hindi, Urdu, English, Hinglish etc.).
 3. Mention only the most important right or next step
 4. Include helpline numbers only when relevant
 
@@ -67,6 +70,7 @@ const uid = () => `${Date.now()}-${++_id}-${Math.random().toString(36).slice(2, 
 
 const PHONE_SPLIT = /\b(112|181|7827-170-170)\b/g;
 const PHONE_TEST = /^(112|181|7827-170-170)$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const sanitizeReply = (text) =>
   text
@@ -78,25 +82,28 @@ const sanitizeReply = (text) =>
     .replace(/^\s*[-•]\s+/gm, '')
     .trim();
 
-const welcomeText = (lang) => ({
-  en: `Namaste 🙏 I'm Sahayata Bot, your NCW legal assistant.\n\nI'm here to help you understand your rights and connect you with the right support. How can I help you today?\n\nIf you're in immediate danger, please call 112 or 181 right away.`,
-  hi: `नमस्ते 🙏 मैं सहायता बॉट हूँ, आपकी एनसीडब्ल्यू कानूनी सहायक।\n\nमैं आपके अधिकारों को समझने और सही सहायता से जोड़ने के लिए यहाँ हूँ। आज मैं आपकी कैसे मदद कर सकती हूँ?\n\nयदि आप तत्काल खतरे में हैं, तो कृपया अभी 112 या 181 पर कॉल करें।`,
-  ur: `نمسکار 🙏 میں سہایتا بوٹ ہوں، آپ کی NCW قانونی معاون۔\n\nمیں آپ کے حقوق سمجھنے اور صحیح مدد سے جوڑنے کے لیے یہاں ہوں۔ آج میں آپ کی کیسے مدد کر سکتی ہوں؟\n\nاگر آپ فوری خطرے میں ہیں تو ابھی 112 یا 181 پر کال کریں۔`,
-}[lang] ?? `Namaste 🙏 I'm Sahayata Bot, your NCW legal assistant.\n\nI'm here to help you understand your rights and connect you with the right support. How can I help you today?\n\nIf you're in immediate danger, please call 112 or 181 right away.`);
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Chat() {
-  const { i18n } = useTranslation();
-  const lang = i18n.language;
+  const { t, i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
+  const resolvedLanguage = i18n.resolvedLanguage || i18n.language;
 
-  const makeWelcome = () => ({ id: 'welcome', role: 'model', text: welcomeText(lang) });
+  const makeWelcome = useCallback(
+    () => ({ id: 'welcome', role: 'model', text: t('chat.welcome') }),
+    [resolvedLanguage, t],
+  );
 
   const [messages, setMessages] = useState(() => [makeWelcome()]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [kbPad, setKbPad] = useState(0);
+  const [reportVisible, setReportVisible] = useState(false);
+  const [reportTarget, setReportTarget] = useState(null);
+  const [reportReason, setReportReason] = useState('');
+  const [reportOtherText, setReportOtherText] = useState('');
+  const [reportEmail, setReportEmail] = useState('');
+  const [reportSubmitting, setReportSubmitting] = useState(false);
   const listRef = useRef(null);
 
   // Expo uses 'pan' keyboard mode by default on Android (not adjustResize),
@@ -108,23 +115,135 @@ export default function Chat() {
     return () => { show.remove(); hide.remove(); };
   }, []);
 
-  // Strings
-  const appName = { hi: 'सहायता बॉट', ur: 'سہایتا بوٹ' }[lang] ?? 'Sahayata Bot';
-  const subheading = { hi: 'एआई सहायक', ur: 'اے آئی مددگار' }[lang] ?? 'AI Assistant';
-  const clearLabel = { hi: 'चैट साफ़ करें', ur: 'چیٹ صاف کریں' }[lang] ?? 'Clear Chat';
-  const placeholder = { hi: 'अपना सवाल लिखें…', ur: 'اپنا سوال لکھیں…' }[lang] ?? 'Type your question…';
-  const errFallback = { hi: 'जवाब नहीं मिला। पुनः प्रयास करें।', ur: 'جواب نہیں ملا۔ دوبارہ کوشش کریں۔' }[lang] ?? 'Could not get a response. Please try again.';
-  const errNetwork = { hi: 'नेटवर्क त्रुटि। इंटरनेट जांचें।', ur: 'نیٹ ورک خرابی۔ انٹرنیٹ چیک کریں۔' }[lang] ?? 'Network error. Check your connection.';
+  useEffect(() => {
+    setMessages((prev) => {
+      if (!prev.length || prev[0]?.id !== 'welcome') return prev;
+      return [{ ...prev[0], text: t('chat.welcome') }, ...prev.slice(1)];
+    });
+  }, [resolvedLanguage, t]);
+
+  const reportReasons = [
+    {
+      value: 'Offensive',
+      label: t('chat.reason_offensive'),
+    },
+    {
+      value: 'Irrelevant',
+      label: t('chat.reason_irrelevant'),
+    },
+    {
+      value: 'Misleading',
+      label: t('chat.reason_misleading'),
+    },
+    {
+      value: 'Unsafe',
+      label: t('chat.reason_unsafe'),
+    },
+    {
+      value: 'Other',
+      label: t('chat.reason_other'),
+    },
+  ];
 
   // Clear
   const handleClear = useCallback(() => {
-    const msg = { hi: 'चैट इतिहास साफ़ करें?', ur: 'چیٹ سمری صاف کریں؟' }[lang] ?? 'Clear all chat history?';
-    const cancel = { hi: 'रद्द', ur: 'منسوخ' }[lang] ?? 'Cancel';
-    Alert.alert(clearLabel, msg, [
-      { text: cancel, style: 'cancel' },
-      { text: clearLabel, style: 'destructive', onPress: () => setMessages([makeWelcome()]) },
+    Alert.alert(t('chat.clear_label'), t('chat.clear_message'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('chat.clear_label'), style: 'destructive', onPress: () => setMessages([makeWelcome()]) },
     ]);
-  }, [lang, clearLabel]);
+  }, [makeWelcome, t]);
+
+  const closeReportModal = useCallback(() => {
+    if (reportSubmitting) return;
+    setReportVisible(false);
+    setReportTarget(null);
+    setReportReason('');
+    setReportOtherText('');
+    setReportEmail('');
+  }, [reportSubmitting]);
+
+  const openReportModal = useCallback((item) => {
+    if (!item?.reportable) return;
+    setReportTarget(item);
+    setReportReason('');
+    setReportOtherText('');
+    setReportEmail('');
+    setReportVisible(true);
+  }, []);
+
+  const handleReportSubmit = useCallback(async () => {
+    if (!reportTarget || reportSubmitting) return;
+
+    const trimmedEmail = reportEmail.trim();
+    const email = trimmedEmail.length ? trimmedEmail : null;
+    const otherText = reportOtherText.trim();
+
+    if (!reportReason) {
+      Alert.alert(t('chat.report_error_title'), t('chat.report_reason_required'));
+      return;
+    }
+
+    const emailOk = !email || EMAIL_REGEX.test(email);
+    if (!emailOk) {
+      Alert.alert(t('chat.report_error_title'), t('chat.email_invalid'));
+      return;
+    }
+
+    if (reportReason === 'Other' && !otherText) {
+      Alert.alert(t('chat.report_error_title'), t('chat.other_reason_required'));
+      return;
+    }
+
+    if (REPORT_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
+      Alert.alert(t('chat.report_error_title'), t('chat.report_url_missing'));
+      return;
+    }
+
+    setReportSubmitting(true);
+
+    try {
+      const res = await fetch(REPORT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: reportTarget.text,
+          query: reportTarget.query ?? 'N/A',
+          reason: reportReason === 'Other' ? `Other: ${otherText}` : reportReason,
+          email,
+        }),
+      });
+
+      const raw = await res.text();
+      let json = null;
+      try {
+        json = raw ? JSON.parse(raw) : null;
+      } catch {
+        json = null;
+      }
+
+      if (!res.ok || json?.status !== 'success') {
+        throw new Error(json?.message || raw || `HTTP ${res.status}`);
+      }
+
+      closeReportModal();
+      setMessages((prev) => prev.map((message) => (
+        message.id === reportTarget.id ? { ...message, reported: true } : message
+      )));
+      Alert.alert(t('chat.report_success_title'), t('chat.report_success_message'));
+    } catch (error) {
+      Alert.alert(t('chat.report_error_title'), t('chat.report_error_message'));
+    } finally {
+      setReportSubmitting(false);
+    }
+  }, [
+    closeReportModal,
+    reportEmail,
+    reportOtherText,
+    reportReason,
+    reportSubmitting,
+    reportTarget,
+    t,
+  ]);
 
   // Send
   const handleSend = useCallback(async () => {
@@ -154,19 +273,37 @@ export default function Chat() {
       if (!res.ok) {
         // Show the API error so we can debug (key invalid, quota, model unavailable…)
         const apiErr = json?.error?.message ?? `HTTP ${res.status}`;
-        setMessages((prev) => [...prev, { id: uid(), role: 'model', text: `⚠️ API Error: ${apiErr}` }]);
+        setMessages((prev) => [...prev, {
+          id: uid(),
+          role: 'model',
+          text: `⚠️ ${t('chat.api_error_prefix')}: ${apiErr}`,
+          query: text,
+          reportable: true,
+        }]);
       } else {
-        const rawReply = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? errFallback;
+        const rawReply = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? t('chat.error_fallback');
         const reply = sanitizeReply(rawReply);
-        setMessages((prev) => [...prev, { id: uid(), role: 'model', text: reply }]);
+        setMessages((prev) => [...prev, {
+          id: uid(),
+          role: 'model',
+          text: reply,
+          query: text,
+          reportable: true,
+        }]);
       }
     } catch (e) {
-      setMessages((prev) => [...prev, { id: uid(), role: 'model', text: `⚠️ ${errNetwork}\n\n${e.message}` }]);
+      setMessages((prev) => [...prev, {
+        id: uid(),
+        role: 'model',
+        text: `⚠️ ${t('chat.error_network')}\n\n${e.message}`,
+        query: text,
+        reportable: true,
+      }]);
     } finally {
       setLoading(false);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
     }
-  }, [input, loading, messages, errFallback, errNetwork]);
+  }, [input, loading, messages, t]);
 
   // Phone-aware bot text
   const renderBotText = (text, style) => {
@@ -189,15 +326,30 @@ export default function Chat() {
   const renderBubble = useCallback(({ item }) => {
     const isUser = item.role === 'user';
     const ts = [styles.bubbleText, isUser ? styles.bubbleTextUser : styles.bubbleTextBot];
+
     return (
       <View style={[styles.row, isUser ? styles.rowUser : styles.rowBot]}>
         {!isUser && <View style={styles.avatar}><Ionicons name="sparkles" size={14} color="#fff" /></View>}
-        <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
-          {isUser ? <Text style={ts}>{item.text}</Text> : renderBotText(item.text, ts)}
+        <View style={styles.messageStack}>
+          <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleBot]}>
+            {isUser ? <Text style={ts}>{item.text}</Text> : renderBotText(item.text, ts)}
+          </View>
+          {item.reportable && !item.reported && (
+            <TouchableOpacity
+              style={styles.reportAction}
+              onPress={() => openReportModal(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.reportActionText}>{t('chat.report_action')}</Text>
+            </TouchableOpacity>
+          )}
+          {item.reported && (
+            <Text style={styles.reportedText}>{t('chat.reported')}</Text>
+          )}
         </View>
       </View>
     );
-  }, [lang]);
+  }, [openReportModal, t]);
 
   // ── Layout:
   // SafeAreaView (top only — tab navigator already reserves bottom)
@@ -212,15 +364,22 @@ export default function Chat() {
       <StatusBar style="dark" backgroundColor={Colors.background} />
 
       {/* Header */}
-      <View style={[styles.header, isRTL && styles.rowReverse]}>
-        <View>
-          <Text style={[styles.appName, isRTL && styles.rtl]}>{appName}</Text>
-          <Text style={[styles.subheading, isRTL && styles.rtl]}>{subheading}</Text>
+      <View style={styles.headerWrap}>
+        <View style={[styles.header, isRTL && styles.rowReverse]}>
+          <View>
+            <Text style={[styles.appName, isRTL && styles.rtl]}>{t('chat.app_name')}</Text>
+            <Text style={[styles.subheading, isRTL && styles.rtl]}>{t('chat.subheading')}</Text>
+          </View>
+          <TouchableOpacity style={styles.clearBtn} onPress={handleClear} activeOpacity={0.75}>
+            <Ionicons name="trash-outline" size={15} color={Colors.primary} />
+            <Text style={styles.clearText}>{t('chat.clear_label')}</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.clearBtn} onPress={handleClear} activeOpacity={0.75}>
-          <Ionicons name="trash-outline" size={15} color={Colors.primary} />
-          <Text style={styles.clearText}>{clearLabel}</Text>
-        </TouchableOpacity>
+        <View style={[styles.noticeBanner, isRTL && styles.rowReverse]}>
+          <Ionicons name="information-circle-outline" size={15} color="#8B6A57" />
+          <Text style={[styles.noticeText, isRTL && styles.rtl]}>{t('chat.accuracy_notice')}</Text>
+        </View>
+        <View style={styles.headerDivider} />
       </View>
 
       {/*
@@ -262,7 +421,7 @@ export default function Chat() {
               style={[styles.input, isRTL && styles.rtl]}
               value={input}
               onChangeText={setInput}
-              placeholder={placeholder}
+              placeholder={t('chat.placeholder')}
               placeholderTextColor={Colors.textSecondary}
               multiline
               maxLength={1000}
@@ -280,6 +439,99 @@ export default function Chat() {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <Modal
+        visible={reportVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeReportModal}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalKeyboardWrap}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Pressable style={styles.modalOverlay} onPress={closeReportModal}>
+            <Pressable style={styles.modalCard} onPress={() => {}}>
+              <Text style={[styles.modalTitle, isRTL && styles.rtl]}>{t('chat.report_title')}</Text>
+              <Text style={[styles.modalText, isRTL && styles.rtl]}>{t('chat.report_prompt')}</Text>
+
+              <View style={styles.reasonList}>
+                {reportReasons.map((reason) => {
+                  const selected = reportReason === reason.value;
+                  return (
+                    <TouchableOpacity
+                      key={reason.value}
+                      style={[styles.reasonChip, selected && styles.reasonChipActive]}
+                      onPress={() => setReportReason(reason.value)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.reasonChipText, selected && styles.reasonChipTextActive]}>
+                        {reason.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {reportReason === 'Other' && (
+                <>
+                  <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.other_reason_label')}</Text>
+                  <TextInput
+                    style={[styles.modalInput, isRTL && styles.rtl]}
+                    value={reportOtherText}
+                    onChangeText={setReportOtherText}
+                    placeholder={t('chat.other_reason_placeholder')}
+                    placeholderTextColor={Colors.textSecondary}
+                    maxLength={25}
+                    editable={!reportSubmitting}
+                    textAlign={isRTL ? 'right' : 'left'}
+                  />
+                </>
+              )}
+
+              <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.email_label')}</Text>
+              <TextInput
+                style={[styles.modalInput, isRTL && styles.rtl]}
+                value={reportEmail}
+                onChangeText={setReportEmail}
+                placeholder={t('chat.email_placeholder')}
+                placeholderTextColor={Colors.textSecondary}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!reportSubmitting}
+                textAlign={isRTL ? 'right' : 'left'}
+              />
+
+              <Text style={[styles.modalFootnote, isRTL && styles.rtl]}>{t('chat.report_hint')}</Text>
+
+              <View style={[styles.modalActions, isRTL && styles.rowReverse]}>
+                <TouchableOpacity
+                  style={styles.modalCancelBtn}
+                  onPress={closeReportModal}
+                  disabled={reportSubmitting}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.modalSubmitBtn,
+                    (!reportReason || reportSubmitting) && styles.modalSubmitBtnOff,
+                  ]}
+                  onPress={handleReportSubmit}
+                  disabled={!reportReason || reportSubmitting}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.modalSubmitText}>
+                    {reportSubmitting ? '...' : t('chat.submit_label')}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -290,22 +542,36 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F8EFE3' },
   flex: { flex: 1 },
 
+  headerWrap: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginHorizontal: Spacing.lg,
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.md,
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-    borderRadius: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EAD7C5',
-    borderWidth: 1,
-    borderColor: '#EAD7C5',
-    backgroundColor: '#FFF7EF',
-    ...Shadows.small,
+    paddingBottom: Spacing.md,
+  },
+  headerDivider: {
+    height: 1,
+    backgroundColor: '#E0CCB7',
+    marginBottom: Spacing.sm,
+  },
+  noticeBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: Spacing.sm,
+    borderRadius: 14,
+    backgroundColor: '#F6ECDD',
+  },
+  noticeText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 18,
+    color: '#8B6A57',
   },
   rowReverse: { flexDirection: 'row-reverse' },
 
@@ -344,6 +610,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: Spacing.sm },
   rowUser: { justifyContent: 'flex-end' },
   rowBot: { justifyContent: 'flex-start' },
+  messageStack: { maxWidth: '80%' },
 
   avatar: {
     width: 28, height: 28, borderRadius: 14,
@@ -352,7 +619,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   bubble: {
-    maxWidth: '80%',
     borderRadius: 20,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
@@ -376,6 +642,23 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textDecorationLine: 'underline',
   },
+  reportAction: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingHorizontal: 4,
+  },
+  reportActionText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontWeight: '600',
+  },
+  reportedText: {
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    paddingHorizontal: 4,
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
 
   typingRow: {
     flexDirection: 'row',
@@ -394,25 +677,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: Spacing.sm,
     marginHorizontal: Spacing.lg,
+    marginTop: 4,
     marginBottom: Spacing.lg,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    borderRadius: 24,
-    borderTopWidth: 1,
-    borderTopColor: '#EAD7C5',
-    borderWidth: 1,
-    borderColor: '#EAD7C5',
-    backgroundColor: '#FFF7EF',
-    ...Shadows.small,
   },
   input: {
     flex: 1,
     backgroundColor: '#FFFDF9',
     borderWidth: 1,
     borderColor: '#DFC5AF',
-    borderRadius: 18,
+    borderRadius: 22,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+    paddingVertical: 11,
     fontSize: 15,
     color: Colors.text,
     maxHeight: 120,
@@ -426,6 +701,116 @@ const styles = StyleSheet.create({
     ...Shadows.small,
   },
   sendBtnOff: { backgroundColor: Colors.textSecondary, opacity: 0.5 },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(44, 30, 18, 0.36)',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  modalKeyboardWrap: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  modalCard: {
+    backgroundColor: '#FFF9F3',
+    borderRadius: 24,
+    padding: Spacing.lg,
+    borderWidth: 1,
+    borderColor: '#E5D3BF',
+    ...Shadows.small,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  modalText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: Colors.text,
+    marginTop: 8,
+  },
+  reasonList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.md,
+  },
+  reasonChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#D8C2AC',
+    backgroundColor: '#FFFDF9',
+  },
+  reasonChipActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  reasonChipText: {
+    color: Colors.primary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  reasonChipTextActive: {
+    color: '#FFF',
+  },
+  modalLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.text,
+    marginBottom: 8,
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#D8C2AC',
+    borderRadius: 16,
+    backgroundColor: '#FFFDF9',
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    fontSize: 14,
+    color: Colors.text,
+  },
+  modalFootnote: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: Colors.textSecondary,
+    marginTop: 10,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 10,
+    marginTop: Spacing.lg,
+  },
+  modalCancelBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#D8C2AC',
+    backgroundColor: '#FFFDF9',
+  },
+  modalCancelText: {
+    color: Colors.primary,
+    fontWeight: '600',
+  },
+  modalSubmitBtn: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderRadius: 16,
+    backgroundColor: Colors.primary,
+  },
+  modalSubmitBtnOff: {
+    opacity: 0.6,
+  },
+  modalSubmitText: {
+    color: '#FFF',
+    fontWeight: '700',
+  },
 
   rtl: { textAlign: 'right' },
 });
