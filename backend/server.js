@@ -23,6 +23,44 @@ const sendError = (res, status, errorCode, message) => {
   });
 };
 
+const classifyGeminiError = (status, errorStatus, message) => {
+  const normalizedMessage = String(message || '').toLowerCase();
+  const normalizedStatus = String(errorStatus || '').toUpperCase();
+
+  if (status === 429) {
+    return { status: 429, errorCode: 'busy', message: 'The chat service is busy.' };
+  }
+
+  if (
+    normalizedStatus === 'INVALID_ARGUMENT' &&
+    (normalizedMessage.includes('api key') ||
+      normalizedMessage.includes('permission') ||
+      normalizedMessage.includes('not enabled') ||
+      normalizedMessage.includes('unsupported') ||
+      normalizedMessage.includes('model'))
+  ) {
+    return {
+      status: 502,
+      errorCode: 'service_unavailable',
+      message: 'The chat service is not available right now.',
+    };
+  }
+
+  if (status === 400) {
+    return {
+      status: 400,
+      errorCode: 'bad_request',
+      message: 'The request could not be processed.',
+    };
+  }
+
+  return {
+    status: 502,
+    errorCode: 'service_unavailable',
+    message: 'The AI service could not process the request.',
+  };
+};
+
 const corsOptions = allowedOrigins.includes('*')
   ? { origin: true }
   : {
@@ -84,17 +122,22 @@ app.post('/chat', async (req, res) => {
     }
 
     if (!upstream.ok) {
-      if (upstream.status === 400) {
-        sendError(res, 400, 'bad_request', 'The request could not be processed.');
-        return;
-      }
+      const providerStatus = json?.error?.status || '';
+      const providerMessage = json?.error?.message || text || 'Unknown Gemini error';
 
-      if (upstream.status === 429) {
-        sendError(res, 429, 'busy', 'The chat service is busy.');
-        return;
-      }
+      console.error('Gemini upstream error', {
+        status: upstream.status,
+        providerStatus,
+        providerMessage,
+      });
 
-      sendError(res, 502, 'service_unavailable', json?.error?.message || 'The AI service could not process the request.');
+      const classified = classifyGeminiError(
+        upstream.status,
+        providerStatus,
+        providerMessage,
+      );
+
+      sendError(res, classified.status, classified.errorCode, classified.message);
       return;
     }
 
