@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   I18nManager,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -19,6 +20,37 @@ export default function Privacy() {
   const { t, i18n } = useTranslation();
   const isRTL = I18nManager.isRTL;
   const currentLang = i18n.language || 'en';
+  const emailSplitRegex = /([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})/gi;
+  const emailCheckRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+  const handleEmailPress = async (email) => {
+    const url = `mailto:${email}`;
+    const canOpen = await Linking.canOpenURL(url);
+
+    if (canOpen) {
+      await Linking.openURL(url);
+    }
+  };
+
+  const renderBodyText = (body) => {
+    const parts = body.split(emailSplitRegex);
+
+    return parts.map((part, index) => {
+      if (!emailCheckRegex.test(part)) {
+        return part;
+      }
+
+      return (
+        <Text
+          key={`${part}-${index}`}
+          style={styles.emailLink}
+          onPress={() => handleEmailPress(part)}
+        >
+          {part}
+        </Text>
+      );
+    });
+  };
 
   const renderSection = (item) => {
     const heading = item.heading[currentLang] || item.heading.en;
@@ -30,7 +62,7 @@ export default function Privacy() {
           {heading}
         </Text>
         <Text style={[styles.sectionBody, isRTL && styles.textRTL]}>
-          {body}
+          {renderBodyText(body)}
         </Text>
       </View>
     );
@@ -70,7 +102,7 @@ export default function Privacy() {
           {privacyContent.map(renderSection)}
 
           <Text style={[styles.lastUpdatedText, isRTL && styles.textRTL]}>
-            Last updated: March 2026
+            Last updated: March 22, 2026
           </Text>
         </View>
       </ScrollView>
@@ -151,6 +183,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4A3728',
     lineHeight: 22,
+  },
+  emailLink: {
+    color: Colors.primary,
+    textDecorationLine: 'underline',
+    fontWeight: '700',
   },
   lastUpdatedText: {
     fontSize: 12,
