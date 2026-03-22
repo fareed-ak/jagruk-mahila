@@ -1,39 +1,166 @@
-# Jagruk Mahila
+# जागरूक महिला — Jagruk Mahila
 
-Jagruk Mahila is an Expo-based mobile app focused on women's rights awareness, legal guidance, helpline access, and simple AI-assisted support.
+> *Because every woman deserves to know her rights — in her own language.*
 
-The app includes:
+Jagruk Mahila is a free, open-source mobile app that puts legal awareness, emergency helplines, and an AI assistant in the hands of women across India — in English, Hindi, and Urdu.
 
-- rights and law explainers in simple language
-- emergency and support helplines
-- landmark cases and legal reference sections
-- a multilingual interface
-- an AI chat assistant with a separate backend for secret handling
+No sign-up. No paywalls. Just information that matters.
+
+---
+
+## Why We Built This
+
+Most legal information in India is buried in government PDFs, written in complex language, and accessible only to those who can afford a lawyer. For women in rural and semi-urban areas, this gap is even wider.
+
+Jagruk Mahila exists to close that gap — one screen at a time.
+
+---
+
+## What's Inside
+
+🗂 **Legal Awareness** — Rights and protections explained in plain, everyday language
+
+📞 **Helplines** — Emergency and support contacts, one tap away
+
+⚖️ **Landmark Cases** — Real court judgements, made human-readable
+
+🌐 **Multilingual** — English, Hindi, and full Urdu with RTL support
+
+🤖 **AI Assistant** — Ask anything, get guided answers powered by Google Gemini
+
+🚩 **AI Reporting** — Flag responses that feel wrong — we review every one
+
+---
+
+## Tech Stack
+
+- **Expo + Expo Router** — cross-platform mobile
+- **React Native** — UI
+- **i18next** — multilingual support
+- **Node.js + Express** — backend
+- **Google Gemini API** — AI assistant
+
+---
 
 ## Project Structure
 
-`app/` contains the Expo Router screens.
+```
+jagruk-mahila/
+├── app/          # Screens and routes
+├── components/   # Reusable UI components
+├── constants/    # Content and policy data
+├── locales/      # EN, HI, UR translation files
+├── backend/      # Express server — chat and report endpoints
+└── assets/       # Icons and images
+```
 
-`constants/` contains the app content and structured data.
+---
 
-`locales/` contains translation files.
+## Getting Started
 
-`backend/` contains the Node.js server used for AI chat and report submission.
+### Prerequisites
 
-## Running the Project
+- Node.js + npm
+- Expo account
+- `eas-cli` installed globally
+- Gemini API key + report endpoint (for backend)
 
-Read [SetUp.md](/home/raf/projects/jagruk-mahila/SetUp.md) for the full setup and run instructions.
+```bash
+npm install -g eas-cli
+eas login
+```
 
-That guide covers:
+### Install
 
-- Expo and EAS setup
-- backend environment configuration
-- local development
-- Android and iOS builds
-- Cloudflare tunnel fallback if local backend networking does not work
+```bash
+git clone https://github.com/fareed-ak/jagruk-mahila.git
+cd jagruk-mahila
+npm install
+```
 
-## Notes
+```bash
+cd backend
+npm install
+cp .env.example .env
+cd ..
+```
 
-- Do not store production API keys in the mobile app.
-- Keep `backend/.env` private.
-- Use a stable hosted backend for production builds.
+### Configure Backend — `backend/.env`
+
+```env
+PORT=3000
+ALLOWED_ORIGINS=*
+GEMINI_API_KEY=your_gemini_api_key_here
+REPORT_URL=https://your-report-endpoint-here
+```
+
+---
+
+## Running Locally
+
+**Start the backend**
+```bash
+cd backend
+npm run dev
+```
+
+Verify at `http://localhost:3000/health`
+
+**Start the app**
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://YOUR_LOCAL_IP:3000 npx expo start --lan --clear
+```
+
+---
+
+## Builds
+
+```bash
+# Development
+eas build --profile development --platform android
+
+# Preview / Internal Testing
+eas build --profile preview --platform android
+
+# Production — Play Store (.aab)
+eas build --profile production --platform android
+
+# Production — App Store (.ipa)
+eas build --profile production --platform ios
+```
+
+Download completed builds from [expo.dev](https://expo.dev) → your project → **Builds**.
+
+---
+
+## Cloudflare Tunnel (LAN Fallback)
+
+If your phone can't reach the backend over LAN:
+
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
+
+Use the generated `https://...trycloudflare.com` URL as `EXPO_PUBLIC_API_BASE_URL`.
+
+---
+
+## Troubleshooting
+
+**Chat shows network error** — confirm backend is running, check `EXPO_PUBLIC_API_BASE_URL`, open `/health` on your phone browser
+
+**Reports not submitting** — verify `REPORT_URL` in `.env`, restart backend after changes
+
+**Backend unreachable on phone** — switch to tunnel or deploy backend to a hosted server
+
+---
+
+## Security
+
+The backend exists for one reason — to keep secrets out of the app. Never talk to Gemini or the report endpoint directly from the client. Keep `backend/.env` out of version control.
+
+---
+
+## License
+
+Open source. Built for social good. License details coming soon.
