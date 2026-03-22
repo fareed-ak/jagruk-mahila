@@ -161,6 +161,4 @@ The backend exists for one reason — to keep secrets out of the app. Never talk
 
 ---
 
-## License
-
-Open source. Built for social good. License details coming soon.
+Made with love for awareness, safety, and support.
