@@ -2,6 +2,7 @@
   "expo": {
     "name": "Jagruk Mahila",
     "slug": "jagruk-mahila",
+    "owner": "jagruk-mahila",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +14,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jagrukmahila.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,8 +28,9 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
+      "apiBaseUrl": "https://your-backend-domain.com",
       "eas": {
-        "projectId": "a3a09486-eaf9-4133-a373-1e7bb8462e36"
+        "projectId": "9567f3e9-adb1-45e8-b67c-a5acc9053a62"
       }
     }
   }
