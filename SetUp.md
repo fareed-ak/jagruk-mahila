@@ -1,126 +1,130 @@
-# Jagruk Mahila — Dev Guide
+# Jagruk Mahila Setup Guide
 
-## Setup (One Time)
+## 1. Install Dependencies
 
-### 1. Clone & Install
 ```bash
 git clone https://github.com/fareed-ak/jagruk-mahila.git
 cd jagruk-mahila
 npm install
+
+cd backend
+npm install
+cp .env.example .env
+cd ..
 ```
 
-### 2. Install CLIs
-```bash
-npm install -g expo-cli eas-cli
-```
+Set the backend secrets in `backend/.env`:
 
-### 3. Expo Account
-- Create account at **expo.dev** (free)
-- Login in terminal:
+- `GEMINI_API_KEY`
+- `REPORT_URL`
+
+## 2. Install and Configure EAS
+
 ```bash
+npm install -g eas-cli
 eas login
+eas build:configure
 ```
 
----
+If this project is already connected to Expo, `eas build:configure` will just confirm the setup.
 
-## Live Development (Do This Every Time)
-
-This is how you make changes and see them instantly on your phone.
-
-### Step 1 — Enable USB Debugging (one time on phone)
-- Settings → About Phone → tap **Build Number 7 times**
-- Developer Options → **USB Debugging ON**
-
-### Step 2 — Connect Phone
-```bash
-adb devices
-# Must show "device", not "unauthorized"
-# If unauthorized → allow popup on phone
-```
-
-### Step 3 — Start Server
-```bash
-npx expo start --localhost --clear
-```
-
-### Step 4 — Open App on Phone
-- Open the **Jagruk Mahila** dev app (not Expo Go)
-- It auto-connects to your laptop
-
-### Step 5 — Make Changes
-- Edit any `.jsx` or `.json` file → **Save**
-- Phone updates instantly ✅
-- No rebuild needed
-
-### Kill Stuck Server
-```bash
-pkill -f "expo start"
-```
-
----
-
-## No USB? Use Hotspot
-
-- Turn on **phone hotspot**
-- Connect **laptop to that hotspot**
-- Run:
-```bash
-npx expo start --lan --clear
-```
-Scan QR from the dev app.
-
----
-
-## Install Development APK (One Time)
+## 3. Start the Backend
 
 ```bash
-npx eas-cli build --profile development --platform android
+cd backend
+npm run dev
 ```
-- Takes ~15-20 min (cloud build)
-- Download from **expo.dev → Projects → jagruk-mahila → Builds**
-- Install on phone → allow unknown sources
 
-> After this, you never need to rebuild unless you add new native packages.
+Check:
 
----
+```text
+http://localhost:3000/
+http://localhost:3000/health
+```
 
-## Share a Prototype APK
+## 4. Start the App
+
+In a second terminal, start Expo with your backend URL.
+
+For local LAN testing:
 
 ```bash
-npx eas-cli build --profile preview --platform android
+cd /home/raf/projects/jagruk-mahila
+EXPO_PUBLIC_API_BASE_URL=http://YOUR_LOCAL_IP:3000 npx expo start --lan --clear
 ```
-Download and send the APK to anyone — they can install directly.
 
----
+For a hosted backend:
 
-## Final Builds
+```bash
+cd /home/raf/projects/jagruk-mahila
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com npx expo start --clear
+```
 
-| Command | Output | Use For |
-|---|---|---|
-| `eas build --profile development --platform android` | APK | Live dev testing |
-| `eas build --profile preview --platform android` | APK | Sharing/demo |
-| `eas build --profile production --platform android` | AAB | Play Store |
-| `eas build --profile preview --platform ios` | IPA | iOS (needs Apple account $99/yr) |
+## 5. Build the App with EAS
 
----
+### Android Development Build
 
-## Common Errors
+```bash
+eas build --profile development --platform android
+```
 
-| Error | Fix |
-|---|---|
-| `adb not found` | `sudo pacman -S android-tools` |
-| `unauthorized` in adb | Allow USB Debugging popup on phone |
-| `failed to download remote update` | Use USB method or same hotspot |
-| `ngrok tunnel too long` | `npm uninstall ngrok && npx expo install @expo/ngrok` |
-| EAS build ERESOLVE | `npm install react@19.2.4 --save-exact` |
-| Port in use | `pkill -f "expo start"` |
+### Android Preview Build
 
----
+```bash
+eas build --profile preview --platform android
+```
 
-## Store Costs
+### Android Play Store Build
 
-| Platform | Cost |
-|---|---|
-| Google Play | $25 one-time |
-| Apple App Store | $99/year |
-| EAS Build | Free (30 builds/month) |
+```bash
+eas build --profile production --platform android
+```
+
+This produces an `.aab` for the Play Store.
+
+### iOS App Store Build
+
+```bash
+eas build --profile production --platform ios
+```
+
+This produces an `.ipa` for App Store submission.
+
+## 6. Download EAS Builds
+
+After a build finishes, download it from the Expo dashboard:
+
+- open `expo.dev`
+- open the `jagruk-mahila` project
+- open `Builds`
+- download the generated artifact
+
+## 7. Notes for Production
+
+- Do not use a temporary tunnel URL in production builds.
+- Set `EXPO_PUBLIC_API_BASE_URL` to your permanent backend domain before creating store builds.
+- Keep `backend/.env` private.
+
+## 8. Cloudflare Tunnel Backup
+
+If the app cannot reach your local backend over LAN, use Cloudflare Tunnel as a fallback.
+
+Start the backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+In another terminal:
+
+```bash
+cloudflared tunnel --url http://localhost:3000
+```
+
+Copy the generated `https://...trycloudflare.com` URL, then run Expo with it:
+
+```bash
+cd /home/raf/projects/jagruk-mahila
+EXPO_PUBLIC_API_BASE_URL=https://YOUR-TRYCLOUDFLARE-URL npx expo start --lan --clear
+```
