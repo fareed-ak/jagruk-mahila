@@ -16,6 +16,13 @@ const GEMINI_URL = GEMINI_API_KEY
   ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`
   : null;
 
+const sendError = (res, status, errorCode, message) => {
+  res.status(status).json({
+    errorCode,
+    error: message,
+  });
+};
+
 const corsOptions = allowedOrigins.includes('*')
   ? { origin: true }
   : {
@@ -45,14 +52,14 @@ app.get('/health', (_req, res) => {
 
 app.post('/chat', async (req, res) => {
   if (!GEMINI_URL) {
-    res.status(500).json({ error: 'Gemini API key is not configured on the server.' });
+    sendError(res, 500, 'service_unavailable', 'Chat service is not configured.');
     return;
   }
 
   const { contents, systemInstruction, generationConfig } = req.body ?? {};
 
   if (!Array.isArray(contents) || contents.length === 0) {
-    res.status(400).json({ error: 'Request must include a non-empty contents array.' });
+    sendError(res, 400, 'bad_request', 'Request must include a non-empty contents array.');
     return;
   }
 
@@ -77,30 +84,41 @@ app.post('/chat', async (req, res) => {
     }
 
     if (!upstream.ok) {
-      res.status(upstream.status).json({
-        error: json?.error?.message || 'The AI service could not process the request.',
-      });
+      if (upstream.status === 400) {
+        sendError(res, 400, 'bad_request', 'The request could not be processed.');
+        return;
+      }
+
+      if (upstream.status === 429) {
+        sendError(res, 429, 'busy', 'The chat service is busy.');
+        return;
+      }
+
+      sendError(res, 502, 'service_unavailable', json?.error?.message || 'The AI service could not process the request.');
       return;
     }
 
     res.json(json);
   } catch (error) {
-    res.status(502).json({
-      error: error instanceof Error ? error.message : 'Unable to reach the AI service.',
-    });
+    sendError(
+      res,
+      502,
+      'service_unavailable',
+      error instanceof Error ? error.message : 'Unable to reach the AI service.',
+    );
   }
 });
 
 app.post('/report', async (req, res) => {
   if (!REPORT_URL) {
-    res.status(500).json({ error: 'Report URL is not configured on the server.' });
+    sendError(res, 500, 'service_unavailable', 'Report service is not configured.');
     return;
   }
 
   const { message, query, reason, email } = req.body ?? {};
 
   if (!message || !reason) {
-    res.status(400).json({ error: 'Request must include message and reason.' });
+    sendError(res, 400, 'bad_request', 'Request must include message and reason.');
     return;
   }
 
@@ -126,17 +144,28 @@ app.post('/report', async (req, res) => {
     }
 
     if (!upstream.ok || json?.status !== 'success') {
-      res.status(502).json({
-        error: json?.message || text || 'The report service could not process the request.',
-      });
+      if (upstream.status === 400) {
+        sendError(res, 400, 'bad_request', 'The report request could not be processed.');
+        return;
+      }
+
+      if (upstream.status === 429) {
+        sendError(res, 429, 'busy', 'The report service is busy.');
+        return;
+      }
+
+      sendError(res, 502, 'service_unavailable', json?.message || text || 'The report service could not process the request.');
       return;
     }
 
     res.json({ status: 'success' });
   } catch (error) {
-    res.status(502).json({
-      error: error instanceof Error ? error.message : 'Unable to reach the report service.',
-    });
+    sendError(
+      res,
+      502,
+      'service_unavailable',
+      error instanceof Error ? error.message : 'Unable to reach the report service.',
+    );
   }
 });
 

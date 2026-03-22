@@ -83,6 +83,34 @@ const sanitizeReply = (text) =>
     .replace(/^\s*[-•]\s+/gm, '')
     .trim();
 
+const getFriendlyChatErrorKey = (status) => {
+  if (status === 400) return 'chat.error_request';
+  if (status === 429) return 'chat.error_busy';
+  if (status >= 500) return 'chat.error_service';
+  return 'chat.error_fallback';
+};
+
+const getFriendlyReportErrorKey = (status) => {
+  if (status === 400) return 'chat.report_error_try_again';
+  if (status === 429) return 'chat.report_error_busy';
+  if (status >= 500) return 'chat.report_error_service';
+  return 'chat.report_error_message';
+};
+
+const getFriendlyChatErrorKeyFromCode = (errorCode, status) => {
+  if (errorCode === 'bad_request') return 'chat.error_request';
+  if (errorCode === 'busy') return 'chat.error_busy';
+  if (errorCode === 'service_unavailable') return 'chat.error_service';
+  return getFriendlyChatErrorKey(status);
+};
+
+const getFriendlyReportErrorKeyFromCode = (errorCode, status) => {
+  if (errorCode === 'bad_request') return 'chat.report_error_try_again';
+  if (errorCode === 'busy') return 'chat.report_error_busy';
+  if (errorCode === 'service_unavailable') return 'chat.report_error_service';
+  return getFriendlyReportErrorKey(status);
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Chat() {
@@ -223,7 +251,10 @@ export default function Chat() {
       }
 
       if (!res.ok || json?.status !== 'success') {
-        throw new Error(json?.message || raw || `HTTP ${res.status}`);
+        throw new Error(JSON.stringify({
+          status: res.status,
+          errorCode: json?.errorCode || null,
+        }));
       }
 
       closeReportModal();
@@ -232,7 +263,16 @@ export default function Chat() {
       )));
       Alert.alert(t('chat.report_success_title'), t('chat.report_success_message'));
     } catch (error) {
-      Alert.alert(t('chat.report_error_title'), t('chat.report_error_message'));
+      let payload = null;
+      try {
+        payload = error?.message ? JSON.parse(error.message) : null;
+      } catch {
+        payload = null;
+      }
+      const messageKey = payload
+        ? getFriendlyReportErrorKeyFromCode(payload.errorCode, payload.status)
+        : 'chat.report_error_message';
+      Alert.alert(t('chat.report_error_title'), t(messageKey));
     } finally {
       setReportSubmitting(false);
     }
@@ -286,7 +326,7 @@ export default function Chat() {
         setMessages((prev) => [...prev, {
           id: uid(),
           role: 'model',
-          text: t('chat.error_fallback'),
+          text: t(getFriendlyChatErrorKeyFromCode(json?.errorCode, res.status)),
           query: text,
           reportable: true,
         }]);
