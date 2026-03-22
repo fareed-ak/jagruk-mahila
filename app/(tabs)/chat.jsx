@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,11 +28,11 @@ import {
   Shadows,
 } from '../../styles/GlobalStyles';
 
-// ── Gemini ────────────────────────────────────────────────────────────────────
+// ── Backend ───────────────────────────────────────────────────────────────────
 
-const GEMINI_API_KEY = '';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
-const REPORT_URL = '';
+const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl?.replace(/\/$/, '');
+const CHAT_URL = API_BASE_URL ? `${API_BASE_URL}/chat` : null;
+const REPORT_URL = API_BASE_URL ? `${API_BASE_URL}/report` : null;
 
 const SYSTEM_PROMPT = `You are "NCW Sahayata Bot," a compassionate and knowledgeable assistant for the National Commission for Women (NCW), India.
 
@@ -61,7 +62,7 @@ STYLE RULES:
 - Do not format text like *text* or **text**
 - Write in plain sentences only
 
-DISCLAIMER: Always end with — "This is general legal information, not formal legal advice. For your specific case, please consult a lawyer or contact NCW: 7827-170-170."`;
+DISCLAIMER: End with this only when required — "This is general legal information, not formal legal advice. For your specific case, please consult a lawyer or contact NCW: 7827-170-170."`;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -194,8 +195,8 @@ export default function Chat() {
       return;
     }
 
-    if (REPORT_URL === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
-      Alert.alert(t('chat.report_error_title'), t('chat.report_url_missing'));
+    if (!REPORT_URL) {
+      Alert.alert(t('chat.report_error_title'), t('chat.backend_url_missing'));
       return;
     }
 
@@ -250,6 +251,17 @@ export default function Chat() {
     const text = input.trim();
     if (!text || loading) return;
 
+    if (!CHAT_URL) {
+      setMessages((prev) => [...prev, {
+        id: uid(),
+        role: 'model',
+        text: t('chat.backend_url_missing'),
+        query: text,
+        reportable: false,
+      }]);
+      return;
+    }
+
     setMessages((prev) => [...prev, { id: uid(), role: 'user', text }]);
     setInput('');
     setLoading(true);
@@ -259,11 +271,11 @@ export default function Chat() {
       .map((m) => ({ role: m.role, parts: [{ text: m.text }] }));
 
     try {
-      const res = await fetch(GEMINI_URL, {
+      const res = await fetch(CHAT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents: [...history, { role: 'user', parts: [{ text }] }],
           generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
         }),
@@ -271,12 +283,10 @@ export default function Chat() {
       const json = await res.json();
 
       if (!res.ok) {
-        // Show the API error so we can debug (key invalid, quota, model unavailable…)
-        const apiErr = json?.error?.message ?? `HTTP ${res.status}`;
         setMessages((prev) => [...prev, {
           id: uid(),
           role: 'model',
-          text: `⚠️ ${t('chat.api_error_prefix')}: ${apiErr}`,
+          text: t('chat.error_fallback'),
           query: text,
           reportable: true,
         }]);
@@ -295,7 +305,7 @@ export default function Chat() {
       setMessages((prev) => [...prev, {
         id: uid(),
         role: 'model',
-        text: `⚠️ ${t('chat.error_network')}\n\n${e.message}`,
+        text: t('chat.error_network'),
         query: text,
         reportable: true,
       }]);
