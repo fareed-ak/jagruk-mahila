@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 
 const app = express();
+const host = process.env.HOST || '0.0.0.0';
 const port = Number(process.env.PORT || 3000);
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
   .split(',')
@@ -30,6 +31,13 @@ const corsOptions = allowedOrigins.includes('*')
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
+
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'jagruk-mahila-backend',
+  });
+});
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
@@ -132,6 +140,6 @@ app.post('/report', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Jagruk Mahila backend listening on http://localhost:${port}`);
+app.listen(port, host, () => {
+  console.log(`Jagruk Mahila backend listening on http://${host}:${port}`);
 });
