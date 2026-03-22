@@ -181,6 +181,7 @@
     "reason_misleading": "Misleading",
     "reason_unsafe": "Unsafe",
     "reason_other": "Other",
-    "report_url_missing": "Set REPORT_URL before submitting reports."
+    "report_url_missing": "Set REPORT_URL before submitting reports.",
+    "backend_url_missing": "AI service is not configured right now. Please try again later."
   }
 }

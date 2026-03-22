@@ -179,6 +179,7 @@
     "reason_misleading": "भ्रामक",
     "reason_unsafe": "असुरक्षित",
     "reason_other": "अन्य",
-    "report_url_missing": "रिपोर्ट भेजने से पहले REPORT_URL सेट करें।"
+    "report_url_missing": "रिपोर्ट भेजने से पहले REPORT_URL सेट करें।",
+    "backend_url_missing": "एआई सेवा अभी कॉन्फ़िगर नहीं है। कृपया बाद में फिर प्रयास करें।"
   }
 }

@@ -179,6 +179,7 @@
     "reason_misleading": "گمراہ کن",
     "reason_unsafe": "غیر محفوظ",
     "reason_other": "دیگر",
-    "report_url_missing": "رپورٹ بھیجنے سے پہلے REPORT_URL سیٹ کریں۔"
+    "report_url_missing": "رپورٹ بھیجنے سے پہلے REPORT_URL سیٹ کریں۔",
+    "backend_url_missing": "اے آئی سروس ابھی کنفیگر نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں۔"
   }
 }
