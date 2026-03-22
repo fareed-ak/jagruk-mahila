@@ -12,15 +12,22 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const REPORT_URL = process.env.REPORT_URL;
+const EXPOSE_DEBUG_ERRORS = process.env.EXPOSE_DEBUG_ERRORS === 'true';
 const GEMINI_URL = GEMINI_API_KEY
   ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`
   : null;
 
-const sendError = (res, status, errorCode, message) => {
-  res.status(status).json({
+const sendError = (res, status, errorCode, message, debugMessage = null) => {
+  const payload = {
     errorCode,
     error: message,
-  });
+  };
+
+  if (EXPOSE_DEBUG_ERRORS && debugMessage) {
+    payload.debugMessage = debugMessage;
+  }
+
+  res.status(status).json(payload);
 };
 
 const classifyGeminiError = (status, errorStatus, message) => {
@@ -137,7 +144,13 @@ app.post('/chat', async (req, res) => {
         providerMessage,
       );
 
-      sendError(res, classified.status, classified.errorCode, classified.message);
+      sendError(
+        res,
+        classified.status,
+        classified.errorCode,
+        classified.message,
+        providerMessage,
+      );
       return;
     }
 
@@ -147,6 +160,7 @@ app.post('/chat', async (req, res) => {
       res,
       502,
       'service_unavailable',
+      error instanceof Error ? error.message : 'Unable to reach the AI service.',
       error instanceof Error ? error.message : 'Unable to reach the AI service.',
     );
   }
@@ -197,7 +211,13 @@ app.post('/report', async (req, res) => {
         return;
       }
 
-      sendError(res, 502, 'service_unavailable', json?.message || text || 'The report service could not process the request.');
+      sendError(
+        res,
+        502,
+        'service_unavailable',
+        'The report service is not available right now.',
+        json?.message || text || 'The report service could not process the request.',
+      );
       return;
     }
 
@@ -207,6 +227,7 @@ app.post('/report', async (req, res) => {
       res,
       502,
       'service_unavailable',
+      'The report service is not available right now.',
       error instanceof Error ? error.message : 'Unable to reach the report service.',
     );
   }
