@@ -24,7 +24,7 @@ module.exports = ({ config }) => {
       apiBaseUrl:
         process.env.EXPO_PUBLIC_API_BASE_URL ||
         baseConfig.extra?.apiBaseUrl ||
-        'https://your-backend-domain.com',
+        'https://jagruk-mahila.onrender.com',
     },
   };
 };
