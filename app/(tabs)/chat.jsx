@@ -386,7 +386,7 @@ export default function Chat() {
         setMessages((prev) => [...prev, {
           id: uid(),
           role: 'model',
-          text: json?.debugMessage || t(getFriendlyChatErrorKeyFromCode(json?.errorCode, res.status)),
+          text: t(getFriendlyChatErrorKeyFromCode(json?.errorCode, res.status)),
           query: text,
           reportable: true,
         }]);
