@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
 
 const app = express();
 const host = process.env.HOST || '0.0.0.0';
@@ -12,15 +13,22 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const REPORT_URL = process.env.REPORT_URL;
+const isProduction = process.env.NODE_ENV === 'production';
 const GEMINI_URL = GEMINI_API_KEY
   ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`
   : null;
 
-const sendError = (res, status, errorCode, message) => {
-  res.status(status).json({
+const sendError = (res, status, errorCode, message, debugMessage = null) => {
+  const payload = {
     errorCode,
     error: message,
-  });
+  };
+
+  if (!isProduction && debugMessage) {
+    payload.debugMessage = debugMessage;
+  }
+
+  res.status(status).json(payload);
 };
 
 const classifyGeminiError = (status, errorStatus, message) => {
@@ -76,6 +84,31 @@ const corsOptions = allowedOrigins.includes('*')
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: '1mb' }));
+app.set('trust proxy', 1);
+
+const rateLimitMessage = {
+  error: 'Too many requests, please try again shortly.',
+};
+
+const rateLimitKeyGenerator = (req) => req.headers['x-client-id'] || ipKeyGenerator(req);
+
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: rateLimitKeyGenerator,
+  message: rateLimitMessage,
+});
+
+const reportLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: rateLimitKeyGenerator,
+  message: rateLimitMessage,
+});
 
 app.get('/', (_req, res) => {
   res.json({
@@ -88,7 +121,7 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.post('/chat', async (req, res) => {
+app.post('/chat', chatLimiter, async (req, res) => {
   if (!GEMINI_URL) {
     sendError(res, 500, 'service_unavailable', 'Chat service is not configured.');
     return;
@@ -137,7 +170,13 @@ app.post('/chat', async (req, res) => {
         providerMessage,
       );
 
-      sendError(res, classified.status, classified.errorCode, classified.message);
+      sendError(
+        res,
+        classified.status,
+        classified.errorCode,
+        classified.message,
+        providerMessage,
+      );
       return;
     }
 
@@ -148,11 +187,12 @@ app.post('/chat', async (req, res) => {
       502,
       'service_unavailable',
       error instanceof Error ? error.message : 'Unable to reach the AI service.',
+      error instanceof Error ? error.message : 'Unable to reach the AI service.',
     );
   }
 });
 
-app.post('/report', async (req, res) => {
+app.post('/report', reportLimiter, async (req, res) => {
   if (!REPORT_URL) {
     sendError(res, 500, 'service_unavailable', 'Report service is not configured.');
     return;
@@ -197,7 +237,13 @@ app.post('/report', async (req, res) => {
         return;
       }
 
-      sendError(res, 502, 'service_unavailable', json?.message || text || 'The report service could not process the request.');
+      sendError(
+        res,
+        502,
+        'service_unavailable',
+        'The report service is not available right now.',
+        json?.message || text || 'The report service could not process the request.',
+      );
       return;
     }
 
@@ -207,6 +253,7 @@ app.post('/report', async (req, res) => {
       res,
       502,
       'service_unavailable',
+      'The report service is not available right now.',
       error instanceof Error ? error.message : 'Unable to reach the report service.',
     );
   }
