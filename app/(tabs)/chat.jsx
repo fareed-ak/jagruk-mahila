@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
 import { useState, useRef, useCallback, useEffect } from 'react';
@@ -72,6 +73,14 @@ const uid = () => `${Date.now()}-${++_id}-${Math.random().toString(36).slice(2, 
 const PHONE_SPLIT = /\b(112|181|7827-170-170)\b/g;
 const PHONE_TEST = /^(112|181|7827-170-170)$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CLIENT_ID_KEY = 'clientId';
+
+const generateUuidV4 = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
+    const random = Math.floor(Math.random() * 16);
+    const value = char === 'x' ? random : (random & 0x3) | 0x8;
+    return value.toString(16);
+  });
 
 const sanitizeReply = (text) =>
   text
@@ -133,6 +142,7 @@ export default function Chat() {
   const [reportOtherText, setReportOtherText] = useState('');
   const [reportEmail, setReportEmail] = useState('');
   const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [clientId, setClientId] = useState(null);
   const listRef = useRef(null);
 
   // Expo uses 'pan' keyboard mode by default on Android (not adjustResize),
@@ -150,6 +160,33 @@ export default function Chat() {
       return [{ ...prev[0], text: t('chat.welcome') }, ...prev.slice(1)];
     });
   }, [resolvedLanguage, t]);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadClientId = async () => {
+      try {
+        const existingClientId = await AsyncStorage.getItem(CLIENT_ID_KEY);
+
+        if (existingClientId) {
+          if (active) setClientId(existingClientId);
+          return;
+        }
+
+        const newClientId = generateUuidV4();
+        await AsyncStorage.setItem(CLIENT_ID_KEY, newClientId);
+        if (active) setClientId(newClientId);
+      } catch {
+        if (active) setClientId(generateUuidV4());
+      }
+    };
+
+    loadClientId();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const reportReasons = [
     {
@@ -228,12 +265,20 @@ export default function Chat() {
       return;
     }
 
+    if (!clientId) {
+      Alert.alert(t('chat.report_error_title'), t('chat.error_fallback'));
+      return;
+    }
+
     setReportSubmitting(true);
 
     try {
       const res = await fetch(REPORT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': clientId,
+        },
         body: JSON.stringify({
           message: reportTarget.text,
           query: reportTarget.query ?? 'N/A',
@@ -278,6 +323,7 @@ export default function Chat() {
     }
   }, [
     closeReportModal,
+    clientId,
     reportEmail,
     reportOtherText,
     reportReason,
@@ -302,6 +348,17 @@ export default function Chat() {
       return;
     }
 
+    if (!clientId) {
+      setMessages((prev) => [...prev, {
+        id: uid(),
+        role: 'model',
+        text: t('chat.error_fallback'),
+        query: text,
+        reportable: false,
+      }]);
+      return;
+    }
+
     setMessages((prev) => [...prev, { id: uid(), role: 'user', text }]);
     setInput('');
     setLoading(true);
@@ -313,7 +370,10 @@ export default function Chat() {
     try {
       const res = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-client-id': clientId,
+        },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
           contents: [...history, { role: 'user', parts: [{ text }] }],
@@ -353,7 +413,7 @@ export default function Chat() {
       setLoading(false);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
     }
-  }, [input, loading, messages, t]);
+  }, [clientId, input, loading, messages, t]);
 
   // Phone-aware bot text
   const renderBotText = (text, style) => {
