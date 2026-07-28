@@ -31,46 +31,16 @@ import {
 
 // ── Backend ───────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = Constants.expoConfig?.extra?.apiBaseUrl?.replace(/\/$/, '');
-const CHAT_URL = API_BASE_URL ? `${API_BASE_URL}/chat` : null;
-const REPORT_URL = API_BASE_URL ? `${API_BASE_URL}/report` : null;
-
-const SYSTEM_PROMPT = `You are "NCW Sahayata Bot," a compassionate and knowledgeable assistant for the National Commission for Women (NCW), India.
-
-ROLE: Help women understand their legal rights, navigate the justice system, and connect with support resources.
-
-LEGAL EXPERTISE:
-- Indian Penal Code (IPC) & CrPC
-- Protection of Women from Domestic Violence Act
-- Prevention of Sexual Harassment at Workplace (PoSH) Act
-- Muslim Women (Protection of Rights on Marriage) Act, 2019 (Triple Talaq)
-- Other women-centric legislation
-
-⚠️ SAFETY FIRST: If the user's message implies immediate danger or threat, respond FIRST with:
-"Please call 112 (Emergency) or 181 (Women's Helpline) immediately."
-
-RESPONSE FORMAT:
-1. Keep the full reply short but enough explanatory to be helpful. Use simple language.
-2. Give a direct answer in plain text and reply in whatever language the user uses (Hindi, Urdu, English, Hinglish etc.).
-3. Mention only the most important right or next step
-4. Include helpline numbers only when relevant
-
-TONE: Warm, non-judgmental, empowering. Speak simply — avoid legal jargon.
-
-STYLE RULES:
-- Do not use markdown
-- Do not use asterisks, bold, italics, bullet symbols, or headings
-- Do not format text like *text* or **text**
-- Write in plain sentences only
-
-DISCLAIMER: End with this only when required — "This is general legal information, not formal legal advice. For your specific case, please consult a lawyer or contact NCW: 7827-170-170."`;
+const CHAT_API_BASE_URL = Constants.expoConfig?.extra?.chatApiBaseUrl?.replace(/\/$/, '');
+const REPORT_API_BASE_URL = Constants.expoConfig?.extra?.reportApiBaseUrl?.replace(/\/$/, '');
+const CHAT_URL = CHAT_API_BASE_URL ? `${CHAT_API_BASE_URL}/chat` : null;
+const REPORT_URL = REPORT_API_BASE_URL ? `${REPORT_API_BASE_URL}/report` : null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 let _id = 0;
 const uid = () => `${Date.now()}-${++_id}-${Math.random().toString(36).slice(2, 8)}`;
 
-const PHONE_SPLIT = /\b(112|181|7827-170-170)\b/g;
 const PHONE_TEST = /^(112|181|7827-170-170)$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const CLIENT_ID_KEY = 'clientId';
@@ -82,18 +52,45 @@ const generateUuidV4 = () =>
     return value.toString(16);
   });
 
-const sanitizeReply = (text) =>
-  text
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/__(.*?)__/g, '$1')
-    .replace(/_(.*?)_/g, '$1')
-    .replace(/^#{1,6}\s*/gm, '')
-    .replace(/^\s*[-•]\s+/gm, '')
-    .trim();
+const sanitizeReply = (text) => String(text ?? '').trim();
+
+const INLINE_MARKDOWN_SPLIT = /(\b(?:112|181|7827-170-170)\b|\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*|_[^_]+_)/g;
+const BULLET_LINE = /^\s*[-•]\s+/;
+
+const renderInlineMarkdown = (text) =>
+  text.split(INLINE_MARKDOWN_SPLIT).filter(Boolean).map((part, index) => {
+    if (PHONE_TEST.test(part)) {
+      return (
+        <Text
+          key={index}
+          style={styles.phoneLink}
+          onPress={() => Linking.openURL(`tel:${part.replace(/-/g, '')}`)}
+        >
+          {part}
+        </Text>
+      );
+    }
+
+    if (
+      (part.startsWith('**') && part.endsWith('**')) ||
+      (part.startsWith('__') && part.endsWith('__'))
+    ) {
+      return <Text key={index} style={styles.markdownBold}>{part.slice(2, -2)}</Text>;
+    }
+
+    if (
+      (part.startsWith('*') && part.endsWith('*')) ||
+      (part.startsWith('_') && part.endsWith('_'))
+    ) {
+      return <Text key={index} style={styles.markdownItalic}>{part.slice(1, -1)}</Text>;
+    }
+
+    return <Text key={index}>{part}</Text>;
+  });
 
 const getFriendlyChatErrorKey = (status) => {
   if (status === 400) return 'chat.error_request';
+  if (status === 401 || status === 403) return 'chat.error_service';
   if (status === 429) return 'chat.error_busy';
   if (status >= 500) return 'chat.error_service';
   return 'chat.error_fallback';
@@ -348,39 +345,30 @@ export default function Chat() {
       return;
     }
 
-    if (!clientId) {
-      setMessages((prev) => [...prev, {
-        id: uid(),
-        role: 'model',
-        text: t('chat.error_fallback'),
-        query: text,
-        reportable: false,
-      }]);
-      return;
-    }
-
     setMessages((prev) => [...prev, { id: uid(), role: 'user', text }]);
     setInput('');
     setLoading(true);
 
-    const history = messages
-      .filter((m) => m.id !== 'welcome')
-      .map((m) => ({ role: m.role, parts: [{ text: m.text }] }));
+    const requestHeaders = {
+      'Content-Type': 'application/json',
+      ...(clientId ? { 'x-client-id': clientId } : {}),
+    };
 
     try {
       const res = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-client-id': clientId,
-        },
+        headers: requestHeaders,
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-          contents: [...history, { role: 'user', parts: [{ text }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 1024 },
+          question: text,
         }),
       });
-      const json = await res.json();
+      const raw = await res.text();
+      let json = null;
+      try {
+        json = raw ? JSON.parse(raw) : null;
+      } catch {
+        json = null;
+      }
 
       if (!res.ok) {
         setMessages((prev) => [...prev, {
@@ -391,7 +379,7 @@ export default function Chat() {
           reportable: true,
         }]);
       } else {
-        const rawReply = json?.candidates?.[0]?.content?.parts?.[0]?.text ?? t('chat.error_fallback');
+        const rawReply = json?.answer ?? t('chat.error_fallback');
         const reply = sanitizeReply(rawReply);
         setMessages((prev) => [...prev, {
           id: uid(),
@@ -413,21 +401,26 @@ export default function Chat() {
       setLoading(false);
       setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
     }
-  }, [clientId, input, loading, messages, t]);
+  }, [clientId, input, loading, t]);
 
-  // Phone-aware bot text
+  // Markdown-aware bot text
   const renderBotText = (text, style) => {
-    const parts = text.split(PHONE_SPLIT);
+    const lines = text.split('\n');
+
     return (
       <Text style={style}>
-        {parts.map((p, i) =>
-          PHONE_TEST.test(p) ? (
-            <Text key={i} style={styles.phoneLink}
-              onPress={() => Linking.openURL(`tel:${p.replace(/-/g, '')}`)}>
-              {p}
+        {lines.map((line, index) => {
+          const isBullet = BULLET_LINE.test(line);
+          const content = isBullet ? line.replace(BULLET_LINE, '') : line;
+
+          return (
+            <Text key={index}>
+              {isBullet ? '• ' : ''}
+              {renderInlineMarkdown(content)}
+              {index < lines.length - 1 ? '\n' : ''}
             </Text>
-          ) : <Text key={i}>{p}</Text>
-        )}
+          );
+        })}
       </Text>
     );
   };
@@ -747,6 +740,8 @@ const styles = StyleSheet.create({
   bubbleText: { fontSize: 15, lineHeight: 22 },
   bubbleTextUser: { color: Colors.textLight },
   bubbleTextBot: { color: Colors.text },
+  markdownBold: { fontWeight: '700' },
+  markdownItalic: { fontStyle: 'italic' },
   phoneLink: {
     color: Colors.primary,
     fontWeight: '700',

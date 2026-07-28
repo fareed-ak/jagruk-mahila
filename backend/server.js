@@ -11,12 +11,10 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '*')
   .map((value) => value.trim())
   .filter(Boolean);
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const REPORT_URL = process.env.REPORT_URL;
+const CHAT_URL = process.env.CHAT_URL;
+const CHAT_API_KEY = process.env.CHAT_API_KEY;
 const isProduction = process.env.NODE_ENV === 'production';
-const GEMINI_URL = GEMINI_API_KEY
-  ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`
-  : null;
 
 const sendError = (res, status, errorCode, message, debugMessage = null) => {
   const payload = {
@@ -29,44 +27,6 @@ const sendError = (res, status, errorCode, message, debugMessage = null) => {
   }
 
   res.status(status).json(payload);
-};
-
-const classifyGeminiError = (status, errorStatus, message) => {
-  const normalizedMessage = String(message || '').toLowerCase();
-  const normalizedStatus = String(errorStatus || '').toUpperCase();
-
-  if (status === 429) {
-    return { status: 429, errorCode: 'busy', message: 'The chat service is busy.' };
-  }
-
-  if (
-    normalizedStatus === 'INVALID_ARGUMENT' &&
-    (normalizedMessage.includes('api key') ||
-      normalizedMessage.includes('permission') ||
-      normalizedMessage.includes('not enabled') ||
-      normalizedMessage.includes('unsupported') ||
-      normalizedMessage.includes('model'))
-  ) {
-    return {
-      status: 502,
-      errorCode: 'service_unavailable',
-      message: 'The chat service is not available right now.',
-    };
-  }
-
-  if (status === 400) {
-    return {
-      status: 400,
-      errorCode: 'bad_request',
-      message: 'The request could not be processed.',
-    };
-  }
-
-  return {
-    status: 502,
-    errorCode: 'service_unavailable',
-    message: 'The AI service could not process the request.',
-  };
 };
 
 const corsOptions = allowedOrigins.includes('*')
@@ -92,18 +52,18 @@ const rateLimitMessage = {
 
 const rateLimitKeyGenerator = (req) => req.headers['x-client-id'] || ipKeyGenerator(req);
 
-const chatLimiter = rateLimit({
+const reportLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 20,
+  limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: rateLimitKeyGenerator,
   message: rateLimitMessage,
 });
 
-const reportLimiter = rateLimit({
+const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 5,
+  limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: rateLimitKeyGenerator,
@@ -122,27 +82,26 @@ app.get('/health', (_req, res) => {
 });
 
 app.post('/chat', chatLimiter, async (req, res) => {
-  if (!GEMINI_URL) {
+  if (!CHAT_URL) {
     sendError(res, 500, 'service_unavailable', 'Chat service is not configured.');
     return;
   }
 
-  const { contents, systemInstruction, generationConfig } = req.body ?? {};
+  const { question } = req.body ?? {};
 
-  if (!Array.isArray(contents) || contents.length === 0) {
-    sendError(res, 400, 'bad_request', 'Request must include a non-empty contents array.');
+  if (!question || typeof question !== 'string') {
+    sendError(res, 400, 'bad_request', 'Request must include a question.');
     return;
   }
 
   try {
-    const upstream = await fetch(GEMINI_URL, {
+    const upstream = await fetch(CHAT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: systemInstruction,
-        contents,
-        generationConfig,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(CHAT_API_KEY ? { 'X-API-Key': CHAT_API_KEY } : {}),
+      },
+      body: JSON.stringify({ question }),
     });
 
     const text = await upstream.text();
@@ -155,39 +114,36 @@ app.post('/chat', chatLimiter, async (req, res) => {
     }
 
     if (!upstream.ok) {
-      const providerStatus = json?.error?.status || '';
-      const providerMessage = json?.error?.message || text || 'Unknown Gemini error';
+      if (upstream.status === 400) {
+        sendError(res, 400, 'bad_request', 'The chat request could not be processed.');
+        return;
+      }
 
-      console.error('Gemini upstream error', {
-        status: upstream.status,
-        providerStatus,
-        providerMessage,
-      });
-
-      const classified = classifyGeminiError(
-        upstream.status,
-        providerStatus,
-        providerMessage,
-      );
+      if (upstream.status === 429) {
+        sendError(res, 429, 'busy', 'The chat service is busy.');
+        return;
+      }
 
       sendError(
         res,
-        classified.status,
-        classified.errorCode,
-        classified.message,
-        providerMessage,
+        502,
+        'service_unavailable',
+        'The chat service is not available right now.',
+        json?.message || text || 'The chat service could not process the request.',
       );
       return;
     }
 
-    res.json(json);
+    res.json({
+      answer: json?.answer ?? json?.response ?? json?.message ?? text,
+    });
   } catch (error) {
     sendError(
       res,
       502,
       'service_unavailable',
-      error instanceof Error ? error.message : 'Unable to reach the AI service.',
-      error instanceof Error ? error.message : 'Unable to reach the AI service.',
+      'The chat service is not available right now.',
+      error instanceof Error ? error.message : 'Unable to reach the chat service.',
     );
   }
 });
@@ -226,7 +182,7 @@ app.post('/report', reportLimiter, async (req, res) => {
       json = null;
     }
 
-    if (!upstream.ok || json?.status !== 'success') {
+    if (!upstream.ok) {
       if (upstream.status === 400) {
         sendError(res, 400, 'bad_request', 'The report request could not be processed.');
         return;
@@ -237,6 +193,17 @@ app.post('/report', reportLimiter, async (req, res) => {
         return;
       }
 
+      sendError(
+        res,
+        502,
+        'service_unavailable',
+        'The report service is not available right now.',
+        json?.message || text || 'The report service could not process the request.',
+      );
+      return;
+    }
+
+    if (json?.status && json.status !== 'success') {
       sendError(
         res,
         502,
