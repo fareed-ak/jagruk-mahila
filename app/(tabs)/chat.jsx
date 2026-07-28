@@ -292,7 +292,7 @@ export default function Chat() {
         json = null;
       }
 
-      if (!res.ok || json?.status !== 'success') {
+      if (!res.ok) {
         throw new Error(JSON.stringify({
           status: res.status,
           errorCode: json?.errorCode || null,

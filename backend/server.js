@@ -203,7 +203,9 @@ app.post('/report', reportLimiter, async (req, res) => {
       return;
     }
 
-    if (json?.status && json.status !== 'success') {
+    const upstreamStatus = String(json?.status || json?.result || '').toLowerCase();
+
+    if (upstreamStatus && !['ok', 'success', 'recorded'].includes(upstreamStatus)) {
       sendError(
         res,
         502,
