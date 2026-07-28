@@ -113,7 +113,7 @@ Set the required values in `backend/.env`:
 ```env
 PORT=3000
 ALLOWED_ORIGINS=*
-GEMINI_API_KEY=your_gemini_api_key_here
+CHAT_URL=https://support-guardian-api003.onrender.com/chat
 REPORT_URL=https://your-report-endpoint-here
 ```
 
@@ -133,18 +133,33 @@ You can verify it here:
 
 ## Run the App
 
-The app reads the backend base URL from `EXPO_PUBLIC_API_BASE_URL`.
+The app sends chat and report requests to the backend URL from
+`EXPO_PUBLIC_API_BASE_URL`. The backend forwards chat requests to `CHAT_URL`
+and report submissions to `REPORT_URL`.
 
-For local development:
+`EXPO_PUBLIC_REPORT_API_BASE_URL` is an optional report backend override.
+
+For local development on a physical phone:
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=http://YOUR_LOCAL_IP:3000 npx expo start --lan --clear
+EXPO_UNSTABLE_BONJOUR=0 \
+EXPO_PUBLIC_API_BASE_URL=http://YOUR_LOCAL_IP:3000 \
+npx expo start --lan --clear
+```
+
+For local development on an emulator:
+
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://localhost:3000 \
+npx expo start --localhost --clear
 ```
 
 For a hosted backend:
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com npx expo start --clear
+EXPO_UNSTABLE_BONJOUR=0 \
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com \
+npx expo start --lan --clear
 ```
 
 This keeps the backend URL out of the code and lets you switch environments cleanly.
@@ -162,19 +177,22 @@ The build profiles are defined in `eas.json`:
 ### Development Build
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com eas build --profile development --platform android
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com \
+eas build --profile development --platform android
 ```
 
 ### Preview Build
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com eas build --profile preview --platform android
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com \
+eas build --profile preview --platform android
 ```
 
 ### Play Store Build
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com eas build --profile production --platform android
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com \
+eas build --profile production --platform android
 ```
 
 This generates an Android App Bundle (`.aab`) for Google Play.
@@ -182,7 +200,8 @@ This generates an Android App Bundle (`.aab`) for Google Play.
 ### App Store Build
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com eas build --profile production --platform ios
+EXPO_PUBLIC_API_BASE_URL=https://your-backend-domain.com \
+eas build --profile production --platform ios
 ```
 
 This generates an iOS build (`.ipa`) for App Store submission.
@@ -203,8 +222,9 @@ Recommended backend service settings:
 
 Set these environment variables on your host:
 
-- `GEMINI_API_KEY`
 - `REPORT_URL`
+- `CHAT_URL` (for example, `https://support-guardian-api003.onrender.com/chat`)
+- `CHAT_API_KEY` if the upstream chat service requires an API key
 - `PORT` if required by the platform
 
 Once deployed, use the hosted backend URL through `EXPO_PUBLIC_API_BASE_URL` when running Expo or creating EAS builds.
@@ -219,10 +239,13 @@ If your phone cannot reach the local backend over LAN, use Cloudflare Tunnel whi
 cloudflared tunnel --url http://localhost:3000
 ```
 
-Then start Expo using the generated tunnel URL:
+Then start Expo using the generated tunnel URL. This uses Expo LAN mode with
+Bonjour disabled, so it does not depend on ngrok:
 
 ```bash
-EXPO_PUBLIC_API_BASE_URL=https://YOUR-TRYCLOUDFLARE-URL npx expo start --lan --clear
+EXPO_UNSTABLE_BONJOUR=0 \
+EXPO_PUBLIC_API_BASE_URL=https://YOUR-TRYCLOUDFLARE-URL \
+npx expo start --lan --clear
 ```
 
 Keep the backend process and the tunnel running while testing.
@@ -237,13 +260,13 @@ Keep the backend process and the tunnel running while testing.
 
 **Reports are not submitting** — verify `REPORT_URL` in `backend/.env` and restart the backend after changes
 
-**Hosted backend works but chat does not** — check backend environment values like `GEMINI_API_KEY`
+**Hosted backend works but chat does not** — check `CHAT_URL` and `CHAT_API_KEY` on the backend host
 
 ---
 
 ## Security
 
-The backend exists to keep secrets out of the mobile app. The client should only talk to your backend, never directly to Gemini or the report endpoint.
+The backend exists to keep upstream chat and report endpoints out of the mobile app. Do not put `CHAT_URL`, `CHAT_API_KEY`, or `REPORT_URL` in Expo public environment variables.
 
 Keep `backend/.env` out of version control and use a proper hosted backend for production builds.
 
