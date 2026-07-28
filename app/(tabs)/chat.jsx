@@ -7,6 +7,7 @@ import {
   Modal,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -133,6 +134,7 @@ export default function Chat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [kbPad, setKbPad] = useState(0);
+  const [modalKeyboardHeight, setModalKeyboardHeight] = useState(0);
   const [reportVisible, setReportVisible] = useState(false);
   const [reportTarget, setReportTarget] = useState(null);
   const [reportReason, setReportReason] = useState('');
@@ -146,10 +148,24 @@ export default function Chat() {
   // so the OS doesn't shrink the layout. We manually add paddingBottom = keyboard height.
   useEffect(() => {
     if (Platform.OS !== 'android') return;
-    const show = Keyboard.addListener('keyboardDidShow', (e) => setKbPad(e.endCoordinates.height));
-    const hide = Keyboard.addListener('keyboardDidHide', () => setKbPad(0));
+    const show = Keyboard.addListener('keyboardDidShow', (event) => {
+      const keyboardHeight = event.endCoordinates.height;
+
+      if (reportVisible) {
+        setKbPad(0);
+        setModalKeyboardHeight(keyboardHeight);
+        return;
+      }
+
+      setModalKeyboardHeight(0);
+      setKbPad(keyboardHeight);
+    });
+    const hide = Keyboard.addListener('keyboardDidHide', () => {
+      setKbPad(0);
+      setModalKeyboardHeight(0);
+    });
     return () => { show.remove(); hide.remove(); };
-  }, []);
+  }, [reportVisible]);
 
   useEffect(() => {
     setMessages((prev) => {
@@ -218,6 +234,8 @@ export default function Chat() {
 
   const closeReportModal = useCallback(() => {
     if (reportSubmitting) return;
+    Keyboard.dismiss();
+    setModalKeyboardHeight(0);
     setReportVisible(false);
     setReportTarget(null);
     setReportReason('');
@@ -267,6 +285,7 @@ export default function Chat() {
       return;
     }
 
+    Keyboard.dismiss();
     setReportSubmitting(true);
 
     try {
@@ -551,86 +570,101 @@ export default function Chat() {
       >
         <KeyboardAvoidingView
           style={styles.modalKeyboardWrap}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <Pressable style={styles.modalOverlay} onPress={closeReportModal}>
+          <Pressable
+            style={[
+              styles.modalOverlay,
+              modalKeyboardHeight > 0 && {
+                justifyContent: 'flex-end',
+                paddingBottom: modalKeyboardHeight + Spacing.md,
+              },
+            ]}
+            onPress={closeReportModal}
+          >
             <Pressable style={styles.modalCard} onPress={() => {}}>
-              <Text style={[styles.modalTitle, isRTL && styles.rtl]}>{t('chat.report_title')}</Text>
-              <Text style={[styles.modalText, isRTL && styles.rtl]}>{t('chat.report_prompt')}</Text>
+              <ScrollView
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.modalScrollContent}
+              >
+                <Text style={[styles.modalTitle, isRTL && styles.rtl]}>{t('chat.report_title')}</Text>
+                <Text style={[styles.modalText, isRTL && styles.rtl]}>{t('chat.report_prompt')}</Text>
 
-              <View style={styles.reasonList}>
-                {reportReasons.map((reason) => {
-                  const selected = reportReason === reason.value;
-                  return (
-                    <TouchableOpacity
-                      key={reason.value}
-                      style={[styles.reasonChip, selected && styles.reasonChipActive]}
-                      onPress={() => setReportReason(reason.value)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={[styles.reasonChipText, selected && styles.reasonChipTextActive]}>
-                        {reason.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
+                <View style={styles.reasonList}>
+                  {reportReasons.map((reason) => {
+                    const selected = reportReason === reason.value;
+                    return (
+                      <TouchableOpacity
+                        key={reason.value}
+                        style={[styles.reasonChip, selected && styles.reasonChipActive]}
+                        onPress={() => setReportReason(reason.value)}
+                        activeOpacity={0.8}
+                      >
+                        <Text style={[styles.reasonChipText, selected && styles.reasonChipTextActive]}>
+                          {reason.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
 
-              {reportReason === 'Other' && (
-                <>
-                  <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.other_reason_label')}</Text>
-                  <TextInput
-                    style={[styles.modalInput, isRTL && styles.rtl]}
-                    value={reportOtherText}
-                    onChangeText={setReportOtherText}
-                    placeholder={t('chat.other_reason_placeholder')}
-                    placeholderTextColor={Colors.textSecondary}
-                    maxLength={25}
-                    editable={!reportSubmitting}
-                    textAlign={isRTL ? 'right' : 'left'}
-                  />
-                </>
-              )}
+                {reportReason === 'Other' && (
+                  <>
+                    <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.other_reason_label')}</Text>
+                    <TextInput
+                      style={[styles.modalInput, isRTL && styles.rtl]}
+                      value={reportOtherText}
+                      onChangeText={setReportOtherText}
+                      placeholder={t('chat.other_reason_placeholder')}
+                      placeholderTextColor={Colors.textSecondary}
+                      maxLength={25}
+                      editable={!reportSubmitting}
+                      textAlign={isRTL ? 'right' : 'left'}
+                    />
+                  </>
+                )}
 
-              <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.email_label')}</Text>
-              <TextInput
-                style={[styles.modalInput, isRTL && styles.rtl]}
-                value={reportEmail}
-                onChangeText={setReportEmail}
-                placeholder={t('chat.email_placeholder')}
-                placeholderTextColor={Colors.textSecondary}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!reportSubmitting}
-                textAlign={isRTL ? 'right' : 'left'}
-              />
+                <Text style={[styles.modalLabel, isRTL && styles.rtl]}>{t('chat.email_label')}</Text>
+                <TextInput
+                  style={[styles.modalInput, isRTL && styles.rtl]}
+                  value={reportEmail}
+                  onChangeText={setReportEmail}
+                  placeholder={t('chat.email_placeholder')}
+                  placeholderTextColor={Colors.textSecondary}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!reportSubmitting}
+                  textAlign={isRTL ? 'right' : 'left'}
+                />
 
-              <Text style={[styles.modalFootnote, isRTL && styles.rtl]}>{t('chat.report_hint')}</Text>
+                <Text style={[styles.modalFootnote, isRTL && styles.rtl]}>{t('chat.report_hint')}</Text>
 
-              <View style={[styles.modalActions, isRTL && styles.rowReverse]}>
-                <TouchableOpacity
-                  style={styles.modalCancelBtn}
-                  onPress={closeReportModal}
-                  disabled={reportSubmitting}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.modalSubmitBtn,
-                    (!reportReason || reportSubmitting) && styles.modalSubmitBtnOff,
-                  ]}
-                  onPress={handleReportSubmit}
-                  disabled={!reportReason || reportSubmitting}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.modalSubmitText}>
-                    {reportSubmitting ? '...' : t('chat.submit_label')}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                <View style={[styles.modalActions, isRTL && styles.rowReverse]}>
+                  <TouchableOpacity
+                    style={styles.modalCancelBtn}
+                    onPress={closeReportModal}
+                    disabled={reportSubmitting}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.modalCancelText}>{t('common.cancel')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.modalSubmitBtn,
+                      (!reportReason || reportSubmitting) && styles.modalSubmitBtnOff,
+                    ]}
+                    onPress={handleReportSubmit}
+                    disabled={!reportReason || reportSubmitting}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.modalSubmitText}>
+                      {reportSubmitting ? '...' : t('chat.submit_label')}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </ScrollView>
             </Pressable>
           </Pressable>
         </KeyboardAvoidingView>
@@ -812,6 +846,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(44, 30, 18, 0.36)',
     justifyContent: 'center',
     paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xl,
   },
   modalKeyboardWrap: {
     flex: 1,
@@ -820,10 +855,13 @@ const styles = StyleSheet.create({
   modalCard: {
     backgroundColor: '#FFF9F3',
     borderRadius: 24,
-    padding: Spacing.lg,
     borderWidth: 1,
     borderColor: '#E5D3BF',
+    maxHeight: '88%',
     ...Shadows.small,
+  },
+  modalScrollContent: {
+    padding: Spacing.lg,
   },
   modalTitle: {
     fontSize: 20,
